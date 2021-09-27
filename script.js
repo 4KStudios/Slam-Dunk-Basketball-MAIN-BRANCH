@@ -6,14 +6,14 @@ const titleState = {
 }
 
 titleScene.preload = function(){
-  this.load.image('titlescreen', 'images/randbackground.png');
-  this.load.image('startbutton', 'images/startbutton.png');
+  this.load.image('titlescreen', 'images/MAINMENU.gif');
+  this.load.image('startbutton', 'images/startbutton.gif');
 }
 
 titleScene.create = function(){
   var bg = this.add.image(400,250,'titlescreen');
-  bg.setScale(1.5);
-  titleState.startbutton = this.add.sprite(375, 250, 'startbutton');
+  bg.setScale(5);
+  titleState.startbutton = this.add.sprite(375, 420, 'startbutton').setScale(5);
   titleState.startbutton.setInteractive();
 
   titleState.startbutton.once('pointerdown', function (pointer) {
