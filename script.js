@@ -1,9 +1,32 @@
+var gameScene = new Phaser.Scene('game');
+var titleScene = new Phaser.Scene('title');
+
+const titleState = {
+
+}
+
+titleScene.preload = function(){
+  this.load.image('titlescreen', 'images/MAINMENU.gif');
+  this.load.image('startbutton', 'images/startbutton.gif');
+}
+
+titleScene.create = function(){
+  var bg = this.add.image(400,250,'titlescreen');
+  bg.setScale(5);
+  titleState.startbutton = this.add.sprite(375, 410, 'startbutton').setScale(5);
+  titleState.startbutton.setInteractive();
+
+  titleState.startbutton.once('pointerdown', function (pointer) {
+      game.scene.start('game');
+    }, this);
+}
+
 const gameState = {
 scoreP1: 0,
 scoreP2: 0,
 }
 
-function preload()
+gameScene.preload = function()
 {
   //images
     this.load.image('player1img', 'images/player1img.png'); //placeholder
@@ -15,7 +38,7 @@ function preload()
     this.load.image('scoreboard', 'images/scoreboard.gif')
 }
 
-function create() {
+gameScene.create = function() {
   
   //Setting Background
     gameState.background = this.add.image(400, 250, 'background');
@@ -127,7 +150,7 @@ function create() {
     })
 
 }
-function update() {
+gameScene.update = function() {
 
   //Player 1 Movement
     //Left and Right Key Movement
@@ -287,12 +310,7 @@ const config =
   width: 750,
   height: 500,
   backgroundColor: '#f9f9f9',
-  scene: 
-  {
-      preload: preload,
-      create: create,
-      update: update,
-  },
+  scene: {titleScene, gameScene},
   physics: {
   default: 'arcade',
   arcade: {
@@ -303,3 +321,8 @@ const config =
 };
 
 const game = new Phaser.Game(config);
+game.scene.add('title', titleScene);
+game.scene.add("game", gameScene);
+
+// Start the title scene
+game.scene.start('title');
