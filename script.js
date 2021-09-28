@@ -318,12 +318,12 @@ gameScene.update = function() {
     default: 'arcade',
     arcade: {
       enableBody: true,
-      
+
     },
     }
   };
 const game = new Phaser.Game(config);
-//Giving the scenes names
+
 game.scene.add('title', titleScene);
 game.scene.add("game", gameScene);
 
