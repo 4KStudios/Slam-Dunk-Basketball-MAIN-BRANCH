@@ -269,61 +269,61 @@ gameScene.update = function() {
 }
 
 //Score for P1 or Rebound
-function madeShotP1(){
-  if(gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 500){
-      gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
-      gameState.ball.setVelocityX(0);
-      gameState.ball.setVelocityY(30);
-      gameState.cursors.keyQ.duration = 0;
-      gameState.scoreP1 += 2;
-      gameState.player1.hasBall = false;
-      gameState.player2.hasBall = true;
-      gameState.spawnBallP2();
-    } else {
-      gameState.cursors.keyQ.duration = 0;
-      gameState.ball.setVelocityY(50);
-      gameState.ball.setVelocityX(Phaser.Math.Between(-50, 50));
-      gameState.ball.inAir = false;
-    }
-}
+  function madeShotP1(){
+    if(gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 500){
+        gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
+        gameState.ball.setVelocityX(0);
+        gameState.ball.setVelocityY(30);
+        gameState.cursors.keyQ.duration = 0;
+        gameState.scoreP1 += 2;
+        gameState.player1.hasBall = false;
+        gameState.player2.hasBall = true;
+        gameState.spawnBallP2();
+      } else {
+        gameState.cursors.keyQ.duration = 0;
+        gameState.ball.setVelocityY(50);
+        gameState.ball.setVelocityX(Phaser.Math.Between(-50, 50));
+        gameState.ball.inAir = false;
+      }
+  }
 
 //Score for P2 or Rebound
-function madeShotP2(){
-  if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){
-      gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
-      gameState.ball.setVelocityX(0);
-      gameState.ball.setVelocityY(30);
-      gameState.cursors.numPad1.duration = 0;
-      gameState.scoreP2 += 2;
-      gameState.player2.hasBall = false;
-      gameState.player1.hasBall = true;
-      gameState.spawnBallP1();
-    } else {
-      gameState.cursors.numPad1.duration = 0;
-      gameState.ball.setVelocityY(50);
-      gameState.ball.setVelocityX(Phaser.Math.Between(-50, 50));
-      gameState.ball.inAir = false;
-    }
-}
+  function madeShotP2(){
+    if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){
+        gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
+        gameState.ball.setVelocityX(0);
+        gameState.ball.setVelocityY(30);
+        gameState.cursors.numPad1.duration = 0;
+        gameState.scoreP2 += 2;
+        gameState.player2.hasBall = false;
+        gameState.player1.hasBall = true;
+        gameState.spawnBallP1();
+      } else {
+        gameState.cursors.numPad1.duration = 0;
+        gameState.ball.setVelocityY(50);
+        gameState.ball.setVelocityX(Phaser.Math.Between(-50, 50));
+        gameState.ball.inAir = false;
+      }
+  }
 
 //Phaser Library
-const config = 
-{
-  type: Phaser.AUTO,
-  width: 750,
-  height: 500,
-  backgroundColor: '#f9f9f9',
-  scene: {titleScene, gameScene},
-  physics: {
-  default: 'arcade',
-  arcade: {
-    enableBody: true,
-    
-  },
-  }
-};
+  const config = 
+  {
+    type: Phaser.AUTO,
+    width: 750,
+    height: 500,
+    backgroundColor: '#f9f9f9',
+    scene: {titleScene, gameScene},
+    physics: {
+    default: 'arcade',
+    arcade: {
+      enableBody: true,
 
+    },
+    }
+  };
 const game = new Phaser.Game(config);
+
 game.scene.add('title', titleScene);
 game.scene.add("game", gameScene);
 
