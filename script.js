@@ -11,8 +11,7 @@ titleScene.preload = function(){
 }
 
 titleScene.create = function(){
-  var bg = this.add.image(400,250,'titlescreen');
-  bg.setScale(5);
+  var bg = this.add.image(400,250,'titlescreen').setScale(5);
   titleState.startbutton = this.add.sprite(375, 410, 'startbutton').setScale(5);
   titleState.startbutton.setInteractive();
 
@@ -22,8 +21,16 @@ titleScene.create = function(){
 }
 
 const gameState = {
-scoreP1: 0,
-scoreP2: 0,
+  scoreP1: 0,
+  scoreP2: 0,
+}
+gameState.spawnBallP2 = function(){
+  gameState.player1.setPosition(400,375);
+  gameState.player2.setPosition(400,400);
+}
+gameState.spawnBallP1 = function(){
+  gameState.player2.setPosition(400,375);
+  gameState.player1.setPosition(400,400);
 }
 
 gameScene.preload = function()
@@ -129,8 +136,7 @@ gameScene.create = function() {
       if (gameState.player1.hasBall == true) {
         gameState.player1.hasBall = false;
         gameState.player2.hasBall = true;
-        gameState.player1.setPosition(400,375);
-        gameState.player2.setPosition(400,400)
+        gameState.spawnBallP2();
     }
     });
     this.physics.add.collider(gameState.player2, wallBaseline, function() {
@@ -138,8 +144,7 @@ gameScene.create = function() {
       if (gameState.player2.hasBall == true){
         gameState.player2.hasBall = false;
         gameState.player1.hasBall = true;
-        gameState.player2.setPosition(400,375);
-        gameState.player1.setPosition(400,400);
+        gameState.spawnBallP1();
       }
     });
     this.physics.add.collider(gameState.ball, wallTopBackboard);
@@ -270,11 +275,10 @@ function madeShotP1(){
       gameState.ball.setVelocityX(0);
       gameState.ball.setVelocityY(30);
       gameState.cursors.keyQ.duration = 0;
-      gameState.scoreP1 = gameState.scoreP1 + 2;
+      gameState.scoreP1 += 2;
       gameState.player1.hasBall = false;
       gameState.player2.hasBall = true;
-      gameState.player1.setPosition(400,375);
-      gameState.player2.setPosition(400,400);
+      gameState.spawnBallP2();
     } else {
       gameState.cursors.keyQ.duration = 0;
       gameState.ball.setVelocityY(50);
@@ -290,11 +294,10 @@ function madeShotP2(){
       gameState.ball.setVelocityX(0);
       gameState.ball.setVelocityY(30);
       gameState.cursors.numPad1.duration = 0;
-      gameState.scoreP2 = gameState.scoreP2 + 2;
+      gameState.scoreP2 += 2;
       gameState.player2.hasBall = false;
       gameState.player1.hasBall = true;
-      gameState.player2.setPosition(400,375);
-      gameState.player1.setPosition(400,400);
+      gameState.spawnBallP1();
     } else {
       gameState.cursors.numPad1.duration = 0;
       gameState.ball.setVelocityY(50);
