@@ -12,7 +12,7 @@
   }
 
   titleScene.create = function(){
-    var bg = this.add.image(400,250,'titlescreen').setScale(5);
+    var bg = this.add.image(400, 250,'titlescreen').setScale(5);
     titleState.startbutton = this.add.sprite(375, 410, 'startbutton').setScale(5);
     titleState.startbutton.setInteractive();
 
@@ -226,14 +226,11 @@
       }
     
     //Stealing Player 1
-      if (gameState.player2.hasBall == true) {
-        if (gameState.player1.x <= gameState.player2.x + 30 && gameState.player1.x >=            gameState.player2.x - 30 ){
-          if (gameState.cursors.keyE.isDown) {
-            gameState.player1.hasBall = true;
-            gameState.player2.hasBall = false;
-          }
+      if (gameState.player2.hasBall == true && gameState.player1.x <= gameState.player2.x + 30 && gameState.player1.x >= gameState.player2.x - 30 && gameState.cursors.keyE.isDown){
+          gameState.player1.hasBall = true;
+          gameState.player2.hasBall = false;
         }
-      }
+
     
     //Shooting Player 2
       if (gameState.cursors.numPad1.duration > 0 && gameState.cursors.numPad1.duration < 1000 && gameState.player2.hasBall == true) {
@@ -242,7 +239,7 @@
         gameState.player2.hasBall = false;
         console.log(gameState.cursors.numPad1.duration);
         if (gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 1000){
-        this.physics.moveToObject(gameState.ball, gameState.hoop, 100);
+          this.physics.moveToObject(gameState.ball, gameState.hoop, 100);
         }
         else {
           this.physics.moveToObject(gameState.ball, gameState.hoop, 100);
@@ -251,12 +248,9 @@
 
     //Stealing Player 2
       if (gameState.player1.hasBall == true) {
-        if (gameState.player1.x <= gameState.player2.x + 30 && gameState.player1.x >= gameState.player2.x - 30){
-          if(gameState.cursors.numPad3.isDown) {
-            gameState.player2.hasBall = true;
-            gameState.player1.hasBall = false;
-            
-          }
+        if (gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30 && gameState.cursors.numPad3.isDown){
+          gameState.player2.hasBall = true;
+          gameState.player1.hasBall = false;
         }
       }
     //Score on Scoreboard
