@@ -1,6 +1,7 @@
 //Creating scenes for game screen and title screen
   var gameScene = new Phaser.Scene('game');
   var titleScene = new Phaser.Scene('title');
+  var controlScene = new Phaser.Scene('controls');
 
 //list for variables in the titleScene
   const titleState = { }
@@ -9,15 +10,36 @@
   titleScene.preload = function(){
     this.load.image('titlescreen', 'images/MAINMENU.gif');
     this.load.image('startbutton', 'images/startbutton.gif');
+    this.load.image('controlsbutton', 'images/randbutton.png');//placeholder
   }
 
   titleScene.create = function(){
     var bg = this.add.image(400, 250,'titlescreen').setScale(5);
-    titleState.startbutton = this.add.sprite(375, 410, 'startbutton').setScale(5);
-    titleState.startbutton.setInteractive();
+    titleState.startbutton = this.add.sprite(375, 300, 'startbutton').setScale(5).setInteractive();
+
+    titleState.controlsbutton = this.add.sprite(375, 450, 'controlsbutton').setScale(.5).setInteractive();
 
     titleState.startbutton.once('pointerdown', function (pointer) {
         game.scene.start('game');
+      }, this);
+
+    titleState.controlsbutton.once('pointerdown', function (pointer) {
+      game.scene.start('controls');
+    }, this);
+  }
+
+//Controls Screen scene
+  controlScene.preload = function(){
+    this.load.image('controlsimage', 'images/ctrls.png');
+    this.load.image('backoutbutton', 'images/randbutton.png');//placeholder
+  }
+
+  controlScene.create = function(){
+    var bg = this.add.image(400, 250, 'controlsimage').setScale(.75);
+    var backoutbutton = this.add.sprite(600, 30, 'backoutbutton').setScale(.3).setInteractive();
+
+    backoutbutton.once('pointerdown', function (pointer) {
+        game.scene.start('title');
       }, this);
   }
 
@@ -311,7 +333,7 @@
     width: 750,
     height: 500,
     backgroundColor: '#f9f9f9',
-    scene: {titleScene, gameScene},
+    scene: {titleScene, controlScene, gameScene},
     physics: {
     default: 'arcade',
     arcade: {
@@ -323,7 +345,8 @@
 const game = new Phaser.Game(config);
 
 game.scene.add('title', titleScene);
-game.scene.add("game", gameScene);
+game.scene.add('game', gameScene);
+game.scene.add('controls', controlScene);
 
 // Start the title scene
   game.scene.start('title');
