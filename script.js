@@ -4,7 +4,6 @@
   var controlScene = new Phaser.Scene('controls');
 
 //list for variables in the titleScene
-  const titleState = { }
 
 //Title Screen scene
   titleScene.preload = function(){
@@ -15,16 +14,18 @@
 
   titleScene.create = function(){
     var bg = this.add.image(400, 250,'titlescreen').setScale(5);
-    titleState.startbutton = this.add.sprite(375, 300, 'startbutton').setScale(5).setInteractive();
+    var startbutton = this.add.sprite(375, 300, 'startbutton').setScale(5).setInteractive();
 
-    titleState.controlsbutton = this.add.sprite(375, 450, 'controlsbutton').setScale(.5).setInteractive();
+    var controlsbutton = this.add.sprite(375, 450, 'controlsbutton').setScale(.5).setInteractive();
 
-    titleState.startbutton.once('pointerdown', function (pointer) {
+    startbutton.once('pointerdown', function (pointer) {
         game.scene.start('game');
+        game.scene.stop('title');
       }, this);
 
-    titleState.controlsbutton.once('pointerdown', function (pointer) {
+    controlsbutton.once('pointerdown', function (pointer) {
       game.scene.start('controls');
+      game.scene.stop('title');
     }, this);
   }
 
@@ -40,6 +41,7 @@
 
     backoutbutton.once('pointerdown', function (pointer) {
         game.scene.start('title');
+        game.scene.stop('controls');
       }, this);
   }
 
@@ -118,6 +120,11 @@
     // Hoop Hitbox
       gameState.hoop.setSize(180, 70);
       gameState.hoop.setOffset(138, 75);
+
+    //3-point line Hitbox
+      gameState.threepointline = this.physics.add.sprite(400, 240)
+      gameState.threepointline.setSize(550,250)
+
 
     // Inputing Arrows
       gameState.cursors = this.input.keyboard.createCursorKeys();
@@ -249,6 +256,7 @@
     
     //Stealing Player 1
       if (gameState.player2.hasBall == true && gameState.player1.x <= gameState.player2.x + 30 && gameState.player1.x >= gameState.player2.x - 30 && gameState.cursors.keyE.isDown){
+          gameState.cursors.keyQ.duration = 0;
           gameState.player1.hasBall = true;
           gameState.player2.hasBall = false;
         }
@@ -269,12 +277,22 @@
       }
 
     //Stealing Player 2
-      if (gameState.player1.hasBall == true) {
+     this.input.keyboard.on('keydown-NUMPAD_THREE', function () {
+        if (gameState.player1.hasBall == true && gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30){
+          gameState.cursors.numPad1.duration = 0;
+          gameState.player2.hasBall = true;
+          gameState.player1.hasBall = false;
+      }
+    }, this);
+      /*if (gameState.player1.hasBall == true) {
         if (gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30 && gameState.cursors.numPad3.isDown){
           gameState.player2.hasBall = true;
           gameState.player1.hasBall = false;
         }
       }
+      */
+      //3 point Shooting
+      
     //Score on Scoreboard
       this.add.text(75, 110, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
       this.add.text(180, 110, `${gameState.scoreP1}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
@@ -338,7 +356,7 @@
     default: 'arcade',
     arcade: {
       enableBody: true,
-
+    debug: true,
     },
     }
   };
