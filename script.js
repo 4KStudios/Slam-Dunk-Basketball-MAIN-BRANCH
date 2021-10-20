@@ -9,7 +9,7 @@
   titleScene.preload = function(){
     this.load.image('titlescreen', 'images/MAINMENU.gif');
     this.load.image('startbutton', 'images/startbutton.gif');
-    this.load.image('controlsbutton', 'images/randbutton.png');//placeholder
+    this.load.image('controlsbutton', 'images/back.gif');//placeholder
   }
 
   titleScene.create = function(){
@@ -32,7 +32,7 @@
 //Controls Screen scene
   controlScene.preload = function(){
     this.load.image('controlsimage', 'images/ctrls.png');
-    this.load.image('backoutbutton', 'images/randbutton.png');//placeholder
+    this.load.image('backoutbutton', 'images/back.gif');//placeholder
   }
 
   controlScene.create = function(){
