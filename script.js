@@ -8,15 +8,15 @@
 //Title Screen scene
   titleScene.preload = function(){
     this.load.image('titlescreen', 'images/MAINMENU.gif');
-    this.load.image('startbutton', 'images/startbutton.gif');
-    this.load.image('controlsbutton', 'images/back.gif');//placeholder
+    this.load.image('startbutton', 'images/startbutton.png');
+    this.load.image('controlsbutton', 'images/controlsbutton.png');//placeholder
   }
 
   titleScene.create = function(){
     var bg = this.add.image(400, 250,'titlescreen').setScale(5);
-    var startbutton = this.add.sprite(375, 300, 'startbutton').setScale(5).setInteractive();
+    var startbutton = this.add.sprite(400, 300, 'startbutton').setScale(5).setInteractive();
 
-    var controlsbutton = this.add.sprite(375, 450, 'controlsbutton').setScale(.5).setInteractive();
+    var controlsbutton = this.add.sprite(400, 415, 'controlsbutton').setScale(5).setInteractive();
 
     startbutton.once('pointerdown', function (pointer) {
         game.scene.start('game');
@@ -32,12 +32,12 @@
 //Controls Screen scene
   controlScene.preload = function(){
     this.load.image('controlsimage', 'images/ctrls.png');
-    this.load.image('backoutbutton', 'images/back.gif');//placeholder
+    this.load.image('backoutbutton', 'images/back.png');//placeholder
   }
 
   controlScene.create = function(){
     var bg = this.add.image(400, 250, 'controlsimage').setScale(.75);
-    var backoutbutton = this.add.sprite(600, 30, 'backoutbutton').setScale(.3).setInteractive();
+    var backoutbutton = this.add.sprite(600, 50, 'backoutbutton').setScale(7).setInteractive();
 
     backoutbutton.once('pointerdown', function (pointer) {
         game.scene.start('title');
@@ -356,7 +356,7 @@
     default: 'arcade',
     arcade: {
       enableBody: true,
-    debug: true,
+
     },
     }
   };
