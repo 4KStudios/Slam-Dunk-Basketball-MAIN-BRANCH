@@ -142,10 +142,38 @@
       gameState.cursors.numPad3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.NUMPAD_THREE);
 
     //Colliders
-      this.physics.add.collider(gameState.player1, wallL);
-      this.physics.add.collider(gameState.player2, wallL);
-      this.physics.add.collider(gameState.player1, wallR);
-      this.physics.add.collider(gameState.player2, wallR);
+      this.physics.add.collider(gameState.player1, wallL, function(){
+        //Out of Bounds on Left Wall
+        if (gameState.player1.y <= 250 && gameState.player1.hasBall == true) {
+          gameState.player1.hasBall = false;
+          gameState.player2.hasBall = true;
+          gameState.spawnBallP2();
+        }
+      });
+      this.physics.add.collider(gameState.player2, wallL, function(){
+        //Out of Bounds on Left Wall
+        if (gameState.player2.y <= 230 && gameState.player2.hasBall == true) {
+          gameState.player2.hasBall = false;
+          gameState.player1.hasBall = true;
+          gameState.spawnBallP1();
+        }
+      });
+      this.physics.add.collider(gameState.player1, wallR, function(){
+        //Out of Bounds on Right Wall
+        if (gameState.player1.y <= 230 && gameState.player1.hasBall == true) {
+          gameState.player1.hasBall = false;
+          gameState.player2.hasBall = true;
+          gameState.spawnBallP2();
+        }
+      });
+      this.physics.add.collider(gameState.player2, wallR, function(){
+        //Out of Bounds on Right Wall
+        if (gameState.player2.y <= 230 && gameState.player2.hasBall == true) {
+          gameState.player2.hasBall = false;
+          gameState.player1.hasBall = true;
+          gameState.spawnBallP1();
+        }
+      });
       this.physics.add.collider(gameState.player1, wallBottom);
       this.physics.add.collider(gameState.player2, wallBottom);
       this.physics.add.collider(gameState.player1, gameState.ball, function(){ 
@@ -356,7 +384,7 @@
     default: 'arcade',
     arcade: {
       enableBody: true,
-
+      debug: true,
     },
     }
   };
