@@ -71,9 +71,12 @@
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('scoreboard', 'images/scoreboard.gif')
+      this.load.spritesheet('shotmeter', 'images/ShotMeter.png', { frameWidth: 32, frameHeight: 32 })
   }
 
   gameScene.create = function() {
+
+    
     
     //Setting Background
       gameState.background = this.add.image(400, 250, 'background');
@@ -111,6 +114,13 @@
       gameState.ball.setScale(.05);
       gameState.ball.setImmovable();
       gameState.ball.inAir = false;
+      gameState.meter = this.physics.add.sprite(400, 250, 'shotmeter');
+      this.anims.create({
+      key: "shoot",
+      frameRate: 12,
+      frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
+      repeat: 1
+    })
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
       gameState.player1.setOffset(6, 38);
@@ -269,7 +279,9 @@
       }
 
     //Shooting Player 1
+      gameState.meter.setPosition(gameState.player1.x, gameState.player1.y - 50)
       if (gameState.cursors.keyQ.duration > 0 && gameState.cursors.keyQ.duration < 1000 && gameState.player1.hasBall == true) {
+        gameState.meter.play('shoot');
         gameState.ball.inAir = true;
         gameState.ball.setPosition(gameState.player1.x, gameState.player1.y - 30);
         gameState.player1.hasBall = false
