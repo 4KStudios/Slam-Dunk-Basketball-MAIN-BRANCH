@@ -71,7 +71,7 @@
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('scoreboard', 'images/scoreboard.gif')
-      this.load.spritesheet('shotmeter', 'images/ShotMeter.png', { frameWidth: 32, frameHeight: 32 })
+      this.load.spritesheet('shotmeter', 'images/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
   }
 
   gameScene.create = function() {
@@ -114,13 +114,13 @@
       gameState.ball.setScale(.05);
       gameState.ball.setImmovable();
       gameState.ball.inAir = false;
-      gameState.meter = this.physics.add.sprite(400, 250, 'shotmeter');
       this.anims.create({
       key: "shoot",
       frameRate: 12,
       frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
-      repeat: 1
+      repeat: 0
     })
+
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
       gameState.player1.setOffset(6, 38);
@@ -224,10 +224,25 @@
         madeShotP1();
         madeShotP2();
       })
+      
+      p1threeptline = false
+      p2threeptline = false
 
+
+      this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
+        p1threeptline = true
+      })
+      this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
+        p2threeptline = true
+      })
   }
   gameScene.update = function() {
 
+
+        p1threeptline = false
+        p2threeptline = false
+
+        
     //Player 1 Movement
       //Left and Right Key Movement
         if (gameState.cursors.keyA.isDown) {
@@ -279,9 +294,10 @@
       }
 
     //Shooting Player 1
-      gameState.meter.setPosition(gameState.player1.x, gameState.player1.y - 50)
+      if(gameState.cursors.keyQ.isDown){
+        shotAnimation(gameState.player1);
+      }
       if (gameState.cursors.keyQ.duration > 0 && gameState.cursors.keyQ.duration < 1000 && gameState.player1.hasBall == true) {
-        gameState.meter.play('shoot');
         gameState.ball.inAir = true;
         gameState.ball.setPosition(gameState.player1.x, gameState.player1.y - 30);
         gameState.player1.hasBall = false
@@ -349,33 +365,55 @@
 //Score for P1 or Rebound
   function madeShotP1(){
     if(gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 500){
-        gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
-        gameState.ball.setVelocityX(0);
-        gameState.ball.setVelocityY(30);
-        gameState.cursors.keyQ.duration = 0;
-        gameState.scoreP1 += 2;
-        gameState.player1.hasBall = false;
-        gameState.player2.hasBall = true;
-        gameState.spawnBallP2();
+        if (p1threeptline == true) {
+          gameState.scoreP1 += 2
+          gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
+          gameState.ball.setVelocityX(0);
+          gameState.ball.setVelocityY(30);
+          gameState.cursors.keyQ.duration = 0;
+          gameState.player1.hasBall = false;
+          gameState.player2.hasBall = true;           
+          gameState.spawnBallP2();
+        } else {
+          gameState.scoreP1 += 3
+          gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
+          gameState.ball.setVelocityX(0);
+          gameState.ball.setVelocityY(30);
+          gameState.cursors.keyQ.duration = 0;
+          gameState.player1.hasBall = false;
+          gameState.player2.hasBall = true;
+          gameState.spawnBallP2();
+        }
       } else {
         gameState.cursors.keyQ.duration = 0;
         gameState.ball.setVelocityY(50);
         gameState.ball.setVelocityX(Phaser.Math.Between(-50, 50));
         gameState.ball.inAir = false;
       }
+  
   }
 
 //Score for P2 or Rebound
   function madeShotP2(){
-    if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){
-        gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
-        gameState.ball.setVelocityX(0);
-        gameState.ball.setVelocityY(30);
-        gameState.cursors.numPad1.duration = 0;
-        gameState.scoreP2 += 2;
-        gameState.player2.hasBall = false;
-        gameState.player1.hasBall = true;
+    if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){if (p2threeptline == true) {
+          gameState.scoreP2 += 2
+          gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
+          gameState.ball.setVelocityX(0);
+          gameState.ball.setVelocityY(30);
+        gameState.cursors.keyQ.duration = 0;
+          gameState.player1.hasBall = false;
+          gameState.player2.hasBall = true;           
+          gameState.spawnBallP2();
+        } else {
+          gameState.scoreP2 += 3
+          gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
+          gameState.ball.setVelocityX(0);
+          gameState.ball.setVelocityY(30);
+          gameState.cursors.numPad1.duration = 0;
+          gameState.player1.hasBall = true;
+          gameState.player2.hasBall = false;
         gameState.spawnBallP1();
+        }
       } else {
         gameState.cursors.numPad1.duration = 0;
         gameState.ball.setVelocityY(50);
@@ -383,6 +421,15 @@
         gameState.ball.inAir = false;
       }
   }
+  function shotAnimation(player){
+    meter = gameScene.add.sprite(player.x, player.y - 50, "shotmeter").setScale(.5);
+    meter.play("shoot");
+
+    meter.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
+      meter.destroy();
+    })
+  }
+  
 
 //Phaser Library
   const config = 
