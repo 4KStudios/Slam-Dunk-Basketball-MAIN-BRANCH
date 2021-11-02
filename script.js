@@ -36,7 +36,7 @@
   }
 
   controlScene.create = function(){
-    var bg = this.add.image(400, 250, 'controlsimage').setScale(.75);
+    var bg = this.add.image(400, 263, 'controlsimage').setScale(.75);
     var backoutbutton = this.add.sprite(600, 50, 'backoutbutton').setScale(7).setInteractive();
 
     backoutbutton.once('pointerdown', function (pointer) {
@@ -236,6 +236,7 @@
         p2threeptline = true
       })
   }
+  
   gameScene.update = function() {
 
 
@@ -294,8 +295,10 @@
       }
 
     //Shooting Player 1
-      if(gameState.cursors.keyQ.isDown){
-        shotAnimation(gameState.player1);
+      if(gameState.player1.hasBall == true && gameState.ball.inAir == false){
+        gameState.cursors.keyQ.on('down', function() { 
+          shotAnimation(gameState.player1);
+        });
       }
       if (gameState.cursors.keyQ.duration > 0 && gameState.cursors.keyQ.duration < 1000 && gameState.player1.hasBall == true) {
         gameState.ball.inAir = true;
