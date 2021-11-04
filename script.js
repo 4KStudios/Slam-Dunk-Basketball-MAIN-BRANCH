@@ -14,9 +14,9 @@
 
   titleScene.create = function(){
     var bg = this.add.image(400, 250,'titlescreen').setScale(5);
-    var startbutton = this.add.sprite(400, 300, 'startbutton').setScale(5).setInteractive();
+    var startbutton = this.add.sprite(400, 300, 'startbutton').setScale(1.5).setInteractive();
 
-    var controlsbutton = this.add.sprite(400, 415, 'controlsbutton').setScale(5).setInteractive();
+    var controlsbutton = this.add.sprite(396, 365, 'controlsbutton').setScale(3).setInteractive();
 
     startbutton.once('pointerdown', function (pointer) {
         game.scene.start('game');
@@ -67,7 +67,7 @@
       this.load.image('player1img', 'images/player1img.png'); //placeholder
       this.load.image('player2img', 'images/player2img.png'); //placeholder
       this.load.image('background', 'images/court.gif');
-      this.load.image('ball', 'images/Basketball2.png');
+      this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('scoreboard', 'images/scoreboard.gif')
@@ -116,7 +116,7 @@
       gameState.ball.inAir = false;
       this.anims.create({
       key: "shoot",
-      frameRate: 12,
+      frameRate: 35,
       frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
       repeat: 0
     })
@@ -235,15 +235,14 @@
       this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
         p2threeptline = true
       })
+
   }
   
   gameScene.update = function() {
+    //Three Point Line Boolean
+      p1threeptline = false
+      p2threeptline = false
 
-
-        p1threeptline = false
-        p2threeptline = false
-
-        
     //Player 1 Movement
       //Left and Right Key Movement
         if (gameState.cursors.keyA.isDown) {
@@ -295,11 +294,12 @@
       }
 
     //Shooting Player 1
-      if(gameState.player1.hasBall == true && gameState.ball.inAir == false){
-        gameState.cursors.keyQ.on('down', function() { 
+      
+      gameState.cursors.keyQ.on('down', function() {
+        if(gameState.player1.hasBall == true && gameState.ball.inAir == false){
           shotAnimation(gameState.player1);
-        });
-      }
+        }
+      });
       if (gameState.cursors.keyQ.duration > 0 && gameState.cursors.keyQ.duration < 1000 && gameState.player1.hasBall == true) {
         gameState.ball.inAir = true;
         gameState.ball.setPosition(gameState.player1.x, gameState.player1.y - 30);
@@ -314,7 +314,9 @@
       }
     
     //Stealing Player 1
-      if (gameState.player2.hasBall == true && gameState.player1.x <= gameState.player2.x + 30 && gameState.player1.x >= gameState.player2.x - 30 && gameState.cursors.keyE.isDown){
+      if (gameState.player2.hasBall == true && gameState.player1.x <= gameState.player2.x 
+       + 30 && gameState.player1.x >= gameState.player2.x - 30 &&  
+       gameState.cursors.keyE.isDown){
           gameState.cursors.keyQ.duration = 0;
           gameState.player1.hasBall = true;
           gameState.player2.hasBall = false;
@@ -322,6 +324,11 @@
 
     
     //Shooting Player 2
+      gameState.cursors.numPad1.on('down', function() {
+        if(gameState.player2.hasBall == true && gameState.ball.inAir == false){
+          shotAnimation(gameState.player2);
+        }
+      });
       if (gameState.cursors.numPad1.duration > 0 && gameState.cursors.numPad1.duration < 1000 && gameState.player2.hasBall == true) {
         gameState.ball.inAir = true;
         gameState.ball.setPosition(gameState.player2.x, gameState.player2.y - 30);
@@ -343,14 +350,6 @@
           gameState.player1.hasBall = false;
       }
     }, this);
-      /*if (gameState.player1.hasBall == true) {
-        if (gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30 && gameState.cursors.numPad3.isDown){
-          gameState.player2.hasBall = true;
-          gameState.player1.hasBall = false;
-        }
-      }
-      */
-      //3 point Shooting
       
     //Score on Scoreboard
       this.add.text(75, 110, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
@@ -398,15 +397,16 @@
 
 //Score for P2 or Rebound
   function madeShotP2(){
-    if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){if (p2threeptline == true) {
+    if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){
+      if (p2threeptline == true) {
           gameState.scoreP2 += 2
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
           gameState.ball.setVelocityY(30);
-        gameState.cursors.keyQ.duration = 0;
+          gameState.cursors.numPad1.duration = 0;
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
-          gameState.spawnBallP2();
+          gameState.spawnBallP1();
         } else {
           gameState.scoreP2 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
@@ -415,7 +415,7 @@
           gameState.cursors.numPad1.duration = 0;
           gameState.player1.hasBall = true;
           gameState.player2.hasBall = false;
-        gameState.spawnBallP1();
+          gameState.spawnBallP1();
         }
       } else {
         gameState.cursors.numPad1.duration = 0;
@@ -428,11 +428,14 @@
     meter = gameScene.add.sprite(player.x, player.y - 50, "shotmeter").setScale(.5);
     meter.play("shoot");
 
-    meter.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
-      meter.destroy();
-    })
+    destroySprite(meter);
   }
   
+  function destroySprite(sprite){
+    sprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
+      sprite.destroy();
+    })
+  }
 
 //Phaser Library
   const config = 
@@ -446,7 +449,7 @@
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: true,
+      debug: false,
     },
     }
   };
