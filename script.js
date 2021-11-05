@@ -16,7 +16,7 @@
     var bg = this.add.image(400, 250,'titlescreen').setScale(5);
     var startbutton = this.add.sprite(400, 300, 'startbutton').setScale(1.5).setInteractive();
 
-    var controlsbutton = this.add.sprite(396, 365, 'controlsbutton').setScale(3).setInteractive();
+    var controlsbutton = this.add.sprite(396, 425, 'controlsbutton').setScale(3).setInteractive();
 
     startbutton.once('pointerdown', function (pointer) {
         game.scene.start('game');
@@ -106,9 +106,9 @@
       gameState.hoop.setScale(.5)
       gameState.hoop.setImmovable();
     //Adding Player and Ball Sprite
-      gameState.player1 = this.physics.add.sprite(400, 250, 'player1img');
-      gameState.player1.hasBall = false;
-      gameState.player2 = this.physics.add.sprite(100, 250, 'player2img');
+      gameState.player1 = this.physics.add.sprite(400, 420, 'player1img');
+      gameState.player1.hasBall = true;
+      gameState.player2 = this.physics.add.sprite(400,350 , 'player2img');
       gameState.player2.hasBall = false;
       gameState.ball = this.physics.add.sprite(200, 200, 'ball', .5);
       gameState.ball.setScale(.05);
@@ -198,9 +198,15 @@
             gameState.player2.hasBall = true;
         }
       });
-      this.physics.add.collider(gameState.ball, wallBottom);
-      this.physics.add.collider(gameState.ball, wallL);
-      this.physics.add.collider(gameState.ball, wallR);
+      this.physics.add.collider(gameState.ball, wallBottom, function(){
+        gameState.ball.velocityY = -1*gameState.ball.velocityY
+      });
+      this.physics.add.collider(gameState.ball, wallL, function(){
+        gameState.ball.velocityX = -1*gameState.ball.velocityX
+      });
+      this.physics.add.collider(gameState.ball, wallR, function() {
+        gameState.ball.velocityX = -1*gameState.ball.velocityX
+      });
       this.physics.add.collider(gameState.player1, gameState.player2);
       this.physics.add.collider(gameState.player1, wallBaseline, function() {
         //Player 1 Out of Bounds on baseline
