@@ -37,7 +37,7 @@
 
   controlScene.create = function(){
     var bg = this.add.image(400, 263, 'controlsimage').setScale(.75);
-    var backoutbutton = this.add.sprite(600, 50, 'backoutbutton').setScale(7).setInteractive();
+    var backoutbutton = this.add.sprite(600, 50, 'backoutbutton').setScale(2).setInteractive();
 
     backoutbutton.once('pointerdown', function (pointer) {
         game.scene.start('title');
@@ -66,22 +66,26 @@
     //images
       this.load.image('player1img', 'images/player1img.png'); //placeholder
       this.load.image('player2img', 'images/player2img.png'); //placeholder
-      this.load.image('background', 'images/court.gif');
+      this.load.image('court', 'images/court.gif');
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('scoreboard', 'images/scoreboard.gif')
+      this.load.image('background', 'images/beachbackground.png')
       this.load.spritesheet('shotmeter', 'images/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
+      this.load.spritesheet('p1blocking', 'images/player1block.png', { frameWidth: 27, frameHeight: 100});
+      this.load.spritesheet('p2blocking', 'images/player2block.png', { frameWidth: 27, frameHeight: 100});
   }
 
   gameScene.create = function() {
 
+    //Setting background
+      gameState.background = this.add.image(0,0, 'background');
+      gameState.background.setScale(.69);
     
-    
-    //Setting Background
-      gameState.background = this.add.image(400, 250, 'background');
-      gameState.background.setScale(1.5)
-      gameState.backgroundColor = "rgba(0, 0, 0, 0.30)";
+    //Adding Court
+      gameState.court = this.add.image(400, 250, 'court');
+      gameState.court.setScale(1.5)
 
     //Creating Group for Walls
       const wallL = this.physics.add.staticGroup();
@@ -99,7 +103,7 @@
 
     //Adding Scoreboard
       gameState.scoreboard = this.add.sprite(140, 90, 'scoreboard');
-      gameState.scoreboard.setScale(6,5)
+      gameState.scoreboard.setScale(.75,.75)
 
     // Adding Hoop Sprite
       gameState.hoop = this.physics.add.sprite(400, 100, 'hoop')
@@ -120,6 +124,20 @@
       frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
       repeat: 0
     })
+    this.anims.create({
+      key: "p1block",
+      frameRate: 5,
+      frames: this.anims.generateFrameNumbers("p1block", { start: 0, end: 3 }),
+      repeat: 0
+    });
+    this.anims.create({
+      key: "p2block",
+      frameRate: 5,
+      frames: this.anims.generateFrameNumbers("p2block", { start: 0, end: 3 }),
+      repeat: 0
+    });
+
+    
 
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
@@ -147,9 +165,12 @@
       gameState.cursors.keyE = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
       gameState.cursors.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z);
       gameState.cursors.keyQ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q);
+      gameState.cursors.keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F)
+      ;
       gameState.cursors.numPad1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE);
-      gameState.cursors.numPad2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.NUMPAD_TWO);
-      gameState.cursors.numPad3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.NUMPAD_THREE);
+      gameState.cursors.numPad2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NUMPAD_TWO);
+      gameState.cursors.numPad3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NUMPAD_THREE);
+      gameState.cursors.ctrl = this.input.keyboard.addKey(Phaser.Input.KeyBoard.KeyCodes.ctrl);
 
     //Colliders
       this.physics.add.collider(gameState.player1, wallL, function(){
@@ -214,7 +235,11 @@
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;
           gameState.spawnBallP2();
+          if (gameState.cursors.keyZ.isDown) {
+            gameState.scoreP1 += 2
+        }
       }
+        
       });
       this.physics.add.collider(gameState.player2, wallBaseline, function() {
         //Player 2 Out of Bounds on baseline
@@ -222,6 +247,9 @@
           gameState.player2.hasBall = false;
           gameState.player1.hasBall = true;
           gameState.spawnBallP1();
+          if (gameState.cursors.numPad2.isDown) {
+            gameState.scoreP2 += 2
+        }
         }
       });
       this.physics.add.collider(gameState.ball, wallTopBackboard);
@@ -327,7 +355,7 @@
           gameState.player1.hasBall = true;
           gameState.player2.hasBall = false;
         }
-
+    
     
     //Shooting Player 2
       gameState.cursors.numPad1.on('down', function() {
@@ -340,7 +368,7 @@
         gameState.ball.setPosition(gameState.player2.x, gameState.player2.y - 30);
         gameState.player2.hasBall = false;
         console.log(gameState.cursors.numPad1.duration);
-        if (gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 1000){
+        if (gameState.cursors.numPad2.duration > 250 && gameState.cursors.numPad2.duration < 1000){
           this.physics.moveToObject(gameState.ball, gameState.hoop, 100);
         }
         else {
@@ -356,10 +384,36 @@
           gameState.player1.hasBall = false;
       }
     }, this);
+
+    //blocking p1
+      if (gameState.player1.x >= gameState.player2.x - 30 && gameState.player1.x <= gameState.player2.x + 30) {
+        if (gameState.cursors.numPad2.isDown) {
+          if (gameState.cursors.keyF.isDown) {
+            gameState.player2.hasBall = false
+            gameState.player1.hasBall = true
+         }
+       }
+     }
       
+    //Blocking Player 2
+    if (gameState.player2.x >= gameState.player1.x - 30 && gameState.player2.x <= gameState.player1.x + 30) {
+        if (gameState.cursors.keyZ.isDown) {
+          if (gameState.cursors.ctrl.isDown) {
+            gameState.player1.hasBall = false
+            gameState.player2.hasBall = true
+         }
+       }
+     }
+    this.input.keyboard.on('CTRL.ALT', function () {
+      if (gameState.player1.hasBall == true && gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30) {
+        blockAnimation(gameState.player2)
+      }
+    })
+    
+
     //Score on Scoreboard
-      this.add.text(75, 110, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
-      this.add.text(180, 110, `${gameState.scoreP1}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
+      this.add.text(86, 98, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
+      this.add.text(175, 98, `${gameState.scoreP1}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
     //Ending Game Function
       if(gameState.scoreP1 >= 21){
         this.physics.pause();
@@ -367,6 +421,20 @@
       } else if(gameState.scoreP2 >= 21){
         this.physics.pause();
         this.add.text(375, 50, `Player 2 Wins!` , { fontSize: '15px', fill: '#000' });
+      }
+
+       //dunking p1
+      if(p1threeptline == false && gameState.cursors.keyZ.isDown && gameState.player1.hasBall == true) {
+          this.physics.moveToObject(gameState.player1, gameState.hoop, 100)
+          gameState.ball.y -= 50
+          this.physics.moveToObject(gameState.ball, gameState.hoop, 100) 
+      }
+      
+      //dunking p2
+      if(p2threeptline == false && gameState.cursors.numPad2.isDown && gameState.player2.hasBall == true) {
+        this.physics.moveToObject(gameState.player2, gameState.hoop, 100)
+        gameState.ball.y -= 50
+        this.physics.moveToObject(gameState.ball, gameState.hoop, 100)
       }
   }
 
@@ -441,6 +509,10 @@
     sprite.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
       sprite.destroy();
     })
+  }
+
+  function blockAnimation(player){
+    player.play("p1block");
   }
 
 //Phaser Library
