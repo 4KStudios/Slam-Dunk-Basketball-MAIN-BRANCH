@@ -80,8 +80,8 @@
   gameScene.create = function() {
 
     //Setting background
-      gameState.background = this.add.image(0,0, 'background');
-      gameState.background.setScale(.69);
+      gameState.background = this.add.image(400,50, 'background');
+      gameState.background.setScale(.5);
     
     //Adding Court
       gameState.court = this.add.image(400, 250, 'court');
@@ -95,7 +95,7 @@
       const wallTopBackboard = this.physics.add.staticGroup();
 
     //Putting the walls into the game
-      wallL.create(25, 450, 'Walls').setScale(1, 100).refreshBody();
+      wallL.create(5, 450, 'Walls').setScale(1, 100).refreshBody();
       wallR.create(750, 450, 'Walls').setScale(1, 100).refreshBody();
       wallBottom.create(0, 500, 'Walls').setScale(200, 1).refreshBody();
       wallBaseline.create(250, 155, 'Walls', undefined, false).setScale(100,.5).refreshBody();
@@ -120,20 +120,20 @@
       gameState.ball.inAir = false;
       this.anims.create({
       key: "shoot",
-      frameRate: 35,
+      frameRate: 50,
       frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
       repeat: 0
     })
     this.anims.create({
       key: "p1block",
-      frameRate: 5,
-      frames: this.anims.generateFrameNumbers("p1block", { start: 0, end: 3 }),
+      frameRate: 25,
+      frames: this.anims.generateFrameNumbers("p1blocking", { start: 0, end: 3 }),
       repeat: 0
     });
     this.anims.create({
       key: "p2block",
-      frameRate: 5,
-      frames: this.anims.generateFrameNumbers("p2block", { start: 0, end: 3 }),
+      frameRate: 25,
+      frames: this.anims.generateFrameNumbers("p2blocking", { start: 0, end: 3 }),
       repeat: 0
     });
 
@@ -170,12 +170,12 @@
       gameState.cursors.numPad1 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NUMPAD_ONE);
       gameState.cursors.numPad2 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NUMPAD_TWO);
       gameState.cursors.numPad3 = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.NUMPAD_THREE);
-      gameState.cursors.ctrl = this.input.keyboard.addKey(Phaser.Input.KeyBoard.KeyCodes.ctrl);
+      gameState.cursors.ctrl = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.CTRL)
 
     //Colliders
       this.physics.add.collider(gameState.player1, wallL, function(){
         //Out of Bounds on Left Wall
-        if (gameState.player1.y <= 250 && gameState.player1.hasBall == true) {
+        if (gameState.player1.y <= 270 && gameState.player1.hasBall == true) {
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;
           gameState.spawnBallP2();
@@ -183,7 +183,7 @@
       });
       this.physics.add.collider(gameState.player2, wallL, function(){
         //Out of Bounds on Left Wall
-        if (gameState.player2.y <= 230 && gameState.player2.hasBall == true) {
+        if (gameState.player2.y <= 270 && gameState.player2.hasBall == true) {
           gameState.player2.hasBall = false;
           gameState.player1.hasBall = true;
           gameState.spawnBallP1();
@@ -389,26 +389,28 @@
       if (gameState.player1.x >= gameState.player2.x - 30 && gameState.player1.x <= gameState.player2.x + 30) {
         if (gameState.cursors.numPad2.isDown) {
           if (gameState.cursors.keyF.isDown) {
-            gameState.player2.hasBall = false
-            gameState.player1.hasBall = true
+            playAnimation(gameState.player1, 'p1block');
+            gameState.player2.hasBall = false;
+            gameState.player1.hasBall = true;
          }
        }
      }
       
     //Blocking Player 2
-    if (gameState.player2.x >= gameState.player1.x - 30 && gameState.player2.x <= gameState.player1.x + 30) {
-        if (gameState.cursors.keyZ.isDown) {
-          if (gameState.cursors.ctrl.isDown) {
-            gameState.player1.hasBall = false
-            gameState.player2.hasBall = true
-         }
-       }
-     }
-    this.input.keyboard.on('CTRL.ALT', function () {
+    if (gameState.cursors.ctrl.isDown) {
+      if (gameState.player2.x >= gameState.player1.x - 30 && gameState.player2.x <= gameState.player1.x + 30) {
+          if (gameState.cursors.keyZ.isDown) {
+            playAnimation(gameState.player2, 'p2block');
+            gameState.player1.hasBall = false;
+            gameState.player2.hasBall = true;
+          }
+        }
+      }
+    /*this.input.keyboard.on('CTRL.ALT', function () {
       if (gameState.player1.hasBall == true && gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30) {
         blockAnimation(gameState.player2)
       }
-    })
+    }) */
     
 
     //Score on Scoreboard
@@ -511,8 +513,8 @@
     })
   }
 
-  function blockAnimation(player){
-    player.play("p1block");
+  function playAnimation(player, animation){
+    player.play(animation);
   }
 
 //Phaser Library
