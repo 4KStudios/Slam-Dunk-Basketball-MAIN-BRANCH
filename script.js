@@ -2,6 +2,7 @@
   var gameScene = new Phaser.Scene('game');
   var titleScene = new Phaser.Scene('title');
   var controlScene = new Phaser.Scene('controls');
+  var mapsScene = new Phaser.Scene('maps');
 
 //list for variables in the titleScene
 
@@ -19,7 +20,7 @@
     var controlsbutton = this.add.sprite(396, 425, 'controlsbutton').setScale(3).setInteractive();
 
     startbutton.once('pointerdown', function (pointer) {
-        game.scene.start('game');
+        game.scene.start('maps');
         game.scene.stop('title');
       }, this);
 
@@ -44,6 +45,27 @@
         game.scene.stop('controls');
       }, this);
   }
+
+//MapsScene
+const mapsState = {
+ mapSelection: 0,
+}
+
+mapsScene.preload = function(){
+  this.load.image('black', 'images/blackBackground.png')
+  this.load.image('beach', 'images/beachbackground.png');
+}
+
+mapsScene.create = function(){
+  var bg = this.add.image(400, 250,'black').setScale(5);
+  beachMap = this.physics.add.sprite(150, 150, 'beach').setScale(.05).setInteractive();
+
+    beachMap.once('pointerdown', function (pointer) {
+      mapsState.mapSelection = 1;
+      game.scene.stop('maps')
+      game.scene.start('game');
+    }, this);
+}
 
 //list for variables in the gameScene
   const gameState = {
@@ -70,8 +92,8 @@
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
-      this.load.image('scoreboard', 'images/scoreboard.gif')
-      this.load.image('background', 'images/beachbackground.png')
+      this.load.image('scoreboard', 'images/transparentSB.png')
+      this.load.image('beach', 'images/beachbackground.png')
       this.load.spritesheet('shotmeter', 'images/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
       this.load.spritesheet('p1blocking', 'images/player1block.png', { frameWidth: 27, frameHeight: 100});
       this.load.spritesheet('p2blocking', 'images/player2block.png', { frameWidth: 27, frameHeight: 100});
@@ -80,8 +102,10 @@
   gameScene.create = function() {
 
     //Setting background
-      gameState.background = this.add.image(400,50, 'background');
+    if (mapsState.mapSelection = 1){
+      gameState.background = this.add.image(400,50, 'beach');
       gameState.background.setScale(.5);
+  }
     
     //Adding Court
       gameState.court = this.add.image(400, 250, 'court');
@@ -390,8 +414,11 @@
         if (gameState.cursors.numPad2.isDown) {
           if (gameState.cursors.keyF.isDown) {
             playAnimation(gameState.player1, 'p1block');
-            gameState.player2.hasBall = false;
-            gameState.player1.hasBall = true;
+            gameState.player1.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
+              gameState.player2.hasBall = false;
+              gameState.player1.hasBall = true;
+            })
+            
          }
        }
      }
@@ -401,8 +428,10 @@
       if (gameState.player2.x >= gameState.player1.x - 30 && gameState.player2.x <= gameState.player1.x + 30) {
           if (gameState.cursors.keyZ.isDown) {
             playAnimation(gameState.player2, 'p2block');
-            gameState.player1.hasBall = false;
-            gameState.player2.hasBall = true;
+             gameState.player2.once(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, () => {
+              gameState.player1.hasBall = false;
+              gameState.player2.hasBall = true;
+            })
           }
         }
       }
@@ -524,7 +553,7 @@
     width: 750,
     height: 500,
     backgroundColor: '#f9f9f9',
-    scene: {titleScene, controlScene, gameScene},
+    scene: {titleScene, controlScene, mapsScene, gameScene},
     physics: {
     default: 'arcade',
     arcade: {
@@ -538,6 +567,7 @@ const game = new Phaser.Game(config);
 game.scene.add('title', titleScene);
 game.scene.add('game', gameScene);
 game.scene.add('controls', controlScene);
+game.scene.add('maps', mapsScene);
 
 // Start the title scene
   game.scene.start('title');
