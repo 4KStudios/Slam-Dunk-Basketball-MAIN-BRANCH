@@ -52,13 +52,15 @@ const mapsState = {
 }
 
 mapsScene.preload = function(){
-  this.load.image('black', 'images/blackBackground.png')
+  this.load.image('mapBackground', 'images/background5.png');
   this.load.image('beach', 'images/beachbackground.png');
+  this.load.image('chooseMap', 'images/ChooseMap.png');
 }
 
 mapsScene.create = function(){
-  var bg = this.add.image(400, 250,'black').setScale(5);
-  beachMap = this.physics.add.sprite(150, 150, 'beach').setScale(.05).setInteractive();
+  var bg = this.add.image(400, 250,'mapBackground').setScale(.5);
+  chooseMap = this.add.sprite(375, 50, 'chooseMap').setScale(2);
+  beachMap = this.physics.add.sprite(150, 150, 'beach').setScale(.10).setInteractive();
 
     beachMap.once('pointerdown', function (pointer) {
       mapsState.mapSelection = 1;
@@ -86,17 +88,41 @@ mapsScene.create = function(){
   gameScene.preload = function()
   {
     //images
-      this.load.image('player1img', 'images/player1img.png'); //placeholder
-      this.load.image('player2img', 'images/player2img.png'); //placeholder
+      this.load.image('player1img', 'images/player1img.png'); 
+      this.load.image('player2img', 'images/player2img.png'); 
       this.load.image('court', 'images/court.gif');
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('scoreboard', 'images/transparentSB.png')
       this.load.image('beach', 'images/beachbackground.png')
-      this.load.spritesheet('shotmeter', 'images/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
-      this.load.spritesheet('p1blocking', 'images/player1block.png', { frameWidth: 27, frameHeight: 100});
-      this.load.spritesheet('p2blocking', 'images/player2block.png', { frameWidth: 27, frameHeight: 100});
+    //Animations
+      this.load.spritesheet('shotmeter', 'animations/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
+      this.load.spritesheet('p1blocking', 'animations/player1block.png', { frameWidth: 27, frameHeight: 100});
+      this.load.spritesheet('p2blocking', 'animations/player2block.png', { frameWidth: 27, frameHeight: 100});
+    //Numbers for Score
+      this.load.image('0', 'numbers/0.png');
+      this.load.image('1', 'numbers/1.png');
+      this.load.image('2', 'numbers/2.png');
+      this.load.image('3', 'numbers/3.png');
+      this.load.image('4', 'numbers/4.png');
+      this.load.image('5', 'numbers/5.png');
+      this.load.image('6', 'numbers/6.png');
+      this.load.image('7', 'numbers/7.png');
+      this.load.image('8', 'numbers/8.png');
+      this.load.image('9', 'numbers/9.png');
+      this.load.image('10', 'numbers/10.png');
+      this.load.image('11', 'numbers/11.png');
+      this.load.image('12', 'numbers/12.png');
+      this.load.image('13', 'numbers/13.png');
+      this.load.image('14', 'numbers/14.png');
+      this.load.image('15', 'numbers/15.png');
+      this.load.image('16', 'numbers/16.png');
+      this.load.image('17', 'numbers/17.png');
+      this.load.image('18', 'numbers/18.png');
+      this.load.image('19', 'numbers/19.png');
+      this.load.image('20', 'numbers/20.png');
+      this.load.image('21', 'numbers/21.png');
   }
 
   gameScene.create = function() {
@@ -105,11 +131,12 @@ mapsScene.create = function(){
     if (mapsState.mapSelection = 1){
       gameState.background = this.add.image(400,50, 'beach');
       gameState.background.setScale(.5);
+      gameState.court = this.add.image(400, 250, 'court');
+      gameState.court.setScale(1.5)
   }
     
     //Adding Court
-      gameState.court = this.add.image(400, 250, 'court');
-      gameState.court.setScale(1.5)
+
 
     //Creating Group for Walls
       const wallL = this.physics.add.staticGroup();
@@ -128,6 +155,8 @@ mapsScene.create = function(){
     //Adding Scoreboard
       gameState.scoreboard = this.add.sprite(140, 90, 'scoreboard');
       gameState.scoreboard.setScale(.75,.75)
+      gameState.scoreOnScreenP1 = this.add.sprite(180, 115, '0').setScale(.5);
+      gameState.scoreOnScreenP2 = this.add.sprite(102, 115, '0').setScale(.5);
 
     // Adding Hoop Sprite
       gameState.hoop = this.physics.add.sprite(400, 100, 'hoop')
@@ -443,15 +472,20 @@ mapsScene.create = function(){
     
 
     //Score on Scoreboard
-      this.add.text(86, 98, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
+
+      gameState.scoreOnScreenP1.setTexture(`${gameState.scoreP1}`).setScale(.5);
+      gameState.scoreOnScreenP2.setTexture(`${gameState.scoreP2}`)
+     /* this.add.text(86, 98, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
       this.add.text(175, 98, `${gameState.scoreP1}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
+      */
+      
     //Ending Game Function
       if(gameState.scoreP1 >= 21){
         this.physics.pause();
-        this.add.text(375, 50, `Player 1 Wins!` , { fontSize: '15px', fill: '#000' });
+        //this.add.text(375, 50, `Player 1 Wins!` , { fontSize: '15px', fill: '#000' });
       } else if(gameState.scoreP2 >= 21){
         this.physics.pause();
-        this.add.text(375, 50, `Player 2 Wins!` , { fontSize: '15px', fill: '#000' });
+        //this.add.text(375, 50, `Player 2 Wins!` , { fontSize: '15px', fill: '#000' });
       }
 
        //dunking p1
@@ -467,6 +501,7 @@ mapsScene.create = function(){
         gameState.ball.y -= 50
         this.physics.moveToObject(gameState.ball, gameState.hoop, 100)
       }
+
   }
 
 //Score for P1 or Rebound
