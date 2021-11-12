@@ -55,15 +55,37 @@ mapsScene.preload = function(){
   this.load.image('mapBackground', 'images/background5.png');
   this.load.image('beach', 'images/beachbackground.png');
   this.load.image('chooseMap', 'images/ChooseMap.png');
+  this.load.image('ocean', 'images/pixelocean.png');
+  this.load.image('skyline', 'images/skyline3.png')
+  this.load.image('underwater', 'images/underwater.png')
 }
 
 mapsScene.create = function(){
   var bg = this.add.image(400, 250,'mapBackground').setScale(.5);
   chooseMap = this.add.sprite(375, 50, 'chooseMap').setScale(2);
   beachMap = this.physics.add.sprite(150, 150, 'beach').setScale(.10).setInteractive();
+  oceanMap = this.physics.add.sprite(600,150, 'ocean').setScale(.12).setInteractive();
+  cityMap = this.physics.add.sprite(150,350, 'skyline').setScale(.40).setInteractive();
+  underwaterMap = this.physics.add.sprite(600,360, 'underwater').setScale(.2).setInteractive();
 
+  //Making the maps clickable
     beachMap.once('pointerdown', function (pointer) {
       mapsState.mapSelection = 1;
+      game.scene.stop('maps')
+      game.scene.start('game');
+    }, this);
+    oceanMap.once('pointerdown', function (pointer) {
+      mapsState.mapSelection = 2;
+      game.scene.stop('maps')
+      game.scene.start('game');
+    }, this);
+    cityMap.once('pointerdown', function (pointer) {
+      mapsState.mapSelection = 3;
+      game.scene.stop('maps')
+      game.scene.start('game');
+    }, this);
+    underwaterMap.once('pointerdown', function (pointer) {
+      mapsState.mapSelection = 4;
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
@@ -90,12 +112,16 @@ mapsScene.create = function(){
     //images
       this.load.image('player1img', 'images/player1img.png'); 
       this.load.image('player2img', 'images/player2img.png'); 
-      this.load.image('court', 'images/court.gif');
+      this.load.image('beachCourt', 'images/court.gif');
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('scoreboard', 'images/transparentSB.png')
+      this.load.image('bg', 'images/blackBackground.png');
       this.load.image('beach', 'images/beachbackground.png')
+      this.load.image('ocean', 'images/pixelocean.png');
+      this.load.image('city','images/skyline3.png');
+      this.load.image('underwater','images/underwater.png');      
     //Animations
       this.load.spritesheet('shotmeter', 'animations/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
       this.load.spritesheet('p1blocking', 'animations/player1block.png', { frameWidth: 27, frameHeight: 100});
@@ -127,16 +153,32 @@ mapsScene.create = function(){
 
   gameScene.create = function() {
 
-    //Setting background
+    //Setting background and Court
+    gameState.background = this.add.image(400,50, 'bg')
+    gameState.court = this.add.image(400, 250, 'beachCourt');
+    console.log(mapsState.mapSelection);
     if (mapsState.mapSelection = 1){
-      gameState.background = this.add.image(400,50, 'beach');
+      console.log("beach branch")
+      gameState.background.setTexture('beach');
+      gameState.court.setTexture('beachCourt');
       gameState.background.setScale(.5);
-      gameState.court = this.add.image(400, 250, 'court');
       gameState.court.setScale(1.5)
-  }
-    
-    //Adding Court
-
+    } else if (mapsState.mapSelection = 2){
+      gameState.background.setTexture('ocean');
+      gameState.court.setTexture('beachCourt');
+      gameState.background.setScale(.5);
+      gameState.court.setScale(1.5)
+    } else if (mapsState.mapSelection = 3){
+      gameState.background.setTexture('city');
+      gameState.court.setTexture('beachCourt');
+      gameState.background.setScale(.5);
+      gameState.court.setScale(1.5)
+    } else if (mapsState.mapSelection = 4){
+      gameState.background.setTexture('underwater');
+      gameState.court.setTexture('beachCourt');
+      gameState.background.setScale(.5);
+      gameState.court.setScale(1.5)
+    }
 
     //Creating Group for Walls
       const wallL = this.physics.add.staticGroup();
@@ -155,8 +197,8 @@ mapsScene.create = function(){
     //Adding Scoreboard
       gameState.scoreboard = this.add.sprite(140, 90, 'scoreboard');
       gameState.scoreboard.setScale(.75,.75)
-      gameState.scoreOnScreenP1 = this.add.sprite(180, 115, '0').setScale(.5);
-      gameState.scoreOnScreenP2 = this.add.sprite(102, 115, '0').setScale(.5);
+      gameState.scoreOnScreenP1 = this.add.sprite(180, 112, '0').setScale(.5);
+      gameState.scoreOnScreenP2 = this.add.sprite(102, 112, '0').setScale(.5);
 
     // Adding Hoop Sprite
       gameState.hoop = this.physics.add.sprite(400, 100, 'hoop')
@@ -190,7 +232,6 @@ mapsScene.create = function(){
       repeat: 0
     });
 
-    
 
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
@@ -203,7 +244,7 @@ mapsScene.create = function(){
       gameState.hoop.setOffset(138, 75);
 
     //3-point line Hitbox
-      gameState.threepointline = this.physics.add.sprite(400, 240)
+      gameState.threepointline = this.physics.add.sprite(400, 280)
       gameState.threepointline.setSize(550,250)
 
 
@@ -473,7 +514,7 @@ mapsScene.create = function(){
 
     //Score on Scoreboard
 
-      gameState.scoreOnScreenP1.setTexture(`${gameState.scoreP1}`).setScale(.5);
+      gameState.scoreOnScreenP1.setTexture(`${gameState.scoreP1}`)
       gameState.scoreOnScreenP2.setTexture(`${gameState.scoreP2}`)
      /* this.add.text(86, 98, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
       this.add.text(175, 98, `${gameState.scoreP1}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
