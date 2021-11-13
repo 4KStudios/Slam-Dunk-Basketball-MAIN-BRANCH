@@ -115,12 +115,16 @@ mapsScene.create = function(){
   {
     //images
       this.load.image('player1img', 'images/player1img.png'); 
-      this.load.image('player2img', 'images/player2img.png'); 
+      this.load.image('player1City', 'images/tealpinkp1.png');       
+      this.load.image('player2img', 'images/player2img.png');
+      this.load.image('player2City', 'images/yellowgreenp2.png');        
       this.load.image('beachCourt', 'images/court.gif');
+      this.load.image('cityCourt', 'images/court3.png');
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
-      this.load.image('scoreboard', 'images/transparentSB.png')
+      this.load.image('greenhoop', 'images/greenhoop.png')
+      this.load.image('transparentSB', 'images/transparentSB.png')
       this.load.image('bg', 'images/blackBackground.png');
       this.load.image('beach', 'images/beachbackground.png')
       this.load.image('ocean', 'images/pixelocean.png');
@@ -160,29 +164,6 @@ mapsScene.create = function(){
     //Setting background and Court
     gameState.background = this.add.image(400,50, 'bg')
     gameState.court = this.add.image(400, 250, 'beachCourt');
-    console.log(mapsState.mapSelection);
-    if (mapsState.mapSelection = 1){
-      console.log("beach branch")
-      gameState.background.setTexture('beach');
-      gameState.court.setTexture('beachCourt');
-      gameState.background.setScale(.5);
-      gameState.court.setScale(1.5)
-    } else if (mapsState.mapSelection = 2){
-      gameState.background.setTexture('ocean');
-      gameState.court.setTexture('beachCourt');
-      gameState.background.setScale(.5);
-      gameState.court.setScale(1.5)
-    } else if (mapsState.mapSelection = 3){
-      gameState.background.setTexture('city');
-      gameState.court.setTexture('beachCourt');
-      gameState.background.setScale(.5);
-      gameState.court.setScale(1.5)
-    } else if (mapsState.mapSelection = 4){
-      gameState.background.setTexture('underwater');
-      gameState.court.setTexture('beachCourt');
-      gameState.background.setScale(.5);
-      gameState.court.setScale(1.5)
-    }
 
     //Creating Group for Walls
       const wallL = this.physics.add.staticGroup();
@@ -199,7 +180,7 @@ mapsScene.create = function(){
       wallTopBackboard.create(250, 42, 'Walls', undefined, false).setScale(100,.5).refreshBody();
 
     //Adding Scoreboard
-      gameState.scoreboard = this.add.sprite(140, 90, 'scoreboard');
+      gameState.scoreboard = this.add.sprite(140, 90, 'transparentSB');
       gameState.scoreboard.setScale(.75,.75)
       gameState.scoreOnScreenP1 = this.add.sprite(180, 112, '0').setScale(.5);
       gameState.scoreOnScreenP2 = this.add.sprite(102, 112, '0').setScale(.5);
@@ -217,7 +198,32 @@ mapsScene.create = function(){
       gameState.ball.setScale(.05);
       gameState.ball.setImmovable();
       gameState.ball.inAir = false;
-      this.anims.create({
+
+    //Changing sprites based on map
+    if (mapsState.mapSelection == 1){
+      gameState.background.setTexture('beach').setScale(.5);
+      gameState.court.setTexture('beachCourt').setScale(1.5);
+      gameState.hoop.setTexture('hoop');
+    } 
+    else if (mapsState.mapSelection == 2){
+      gameState.background.setTexture('ocean').setScale(.5);
+      gameState.court.setTexture('beachCourt').setScale(1.5);
+      gameState.hoop.setTexture('greenhoop');
+    } 
+    else if (mapsState.mapSelection == 3){
+      gameState.background.setTexture('city').setScale(1.85).setPosition(375,0);
+      gameState.court.setTexture('cityCourt').setScale(1.5).setPosition(360, 360);
+      gameState.hoop.setTexture('greenhoop');
+      gameState.player1.setTexture('player1City');
+      gameState.player2.setTexture('player2City');
+    } 
+    else if (mapsState.mapSelection == 4){
+      gameState.background.setTexture('underwater').setScale(.5);
+      gameState.court.setTexture('beachCourt').setScale(1.5);
+      gameState.hoop.setTexture('greenhoop');
+    }
+
+    this.anims.create({
       key: "shoot",
       frameRate: 50,
       frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
