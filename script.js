@@ -11,13 +11,16 @@
     this.load.image('titlescreen', 'images/MAINMENU.gif');
     this.load.image('startbutton', 'images/startbutton.png');
     this.load.image('controlsbutton', 'images/controlsbutton.png');//placeholder
+    this.load.image('title', 'images/title1.png')
   }
 
   titleScene.create = function(){
-    var bg = this.add.image(400, 250,'titlescreen').setScale(5);
-    var startbutton = this.add.sprite(400, 300, 'startbutton').setScale(1.5).setInteractive();
+    var bg = this.add.image(400, 250,'titlescreen').setScale(1.4);
+    var startbutton = this.add.sprite(400, 275, 'startbutton').setScale(1).setInteractive();
+    var title = this.add.image(375,150, 'title').setScale(.50).setInteractive()
+    ;
 
-    var controlsbutton = this.add.sprite(396, 425, 'controlsbutton').setScale(3).setInteractive();
+    var controlsbutton = this.add.sprite(398, 425, 'controlsbutton').setScale(2.5).setInteractive();
 
     startbutton.once('pointerdown', function (pointer) {
         game.scene.start('maps');
@@ -58,6 +61,7 @@ mapsScene.preload = function(){
   this.load.image('ocean', 'images/pixelocean.png');
   this.load.image('skyline', 'images/skyline3.png')
   this.load.image('underwater', 'images/underwater.png')
+  this.load.image('title', 'images/title1.png')
 }
 
 mapsScene.create = function(){
