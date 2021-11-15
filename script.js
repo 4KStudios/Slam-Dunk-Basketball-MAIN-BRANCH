@@ -62,6 +62,7 @@ mapsScene.preload = function(){
   this.load.image('skyline', 'images/skyline3.png')
   this.load.image('underwater', 'images/underwater.png')
   this.load.image('title', 'images/title1.png')
+  this.load.image('citybackground1', 'images/citycourt.png')
 }
 
 mapsScene.create = function(){
@@ -69,7 +70,7 @@ mapsScene.create = function(){
   chooseMap = this.add.sprite(375, 50, 'chooseMap').setScale(2);
   beachMap = this.physics.add.sprite(150, 150, 'beach').setScale(.10).setInteractive();
   oceanMap = this.physics.add.sprite(600,150, 'ocean').setScale(.12).setInteractive();
-  cityMap = this.physics.add.sprite(150,350, 'skyline').setScale(.40).setInteractive();
+  cityMap = this.physics.add.sprite(150,350, 'skyline').setScale(.47, .4).setInteractive();
   underwaterMap = this.physics.add.sprite(600,360, 'underwater').setScale(.2).setInteractive();
 
   //Making the maps clickable
@@ -115,11 +116,11 @@ mapsScene.create = function(){
   {
     //images
       this.load.image('player1img', 'images/player1img.png'); 
-      this.load.image('player1City', 'images/tealpinkp1.png');       
+      this.load.image('player1City', 'images/tealpurpp2.png');       
       this.load.image('player2img', 'images/player2img.png');
-      this.load.image('player2City', 'images/yellowgreenp2.png');        
+      this.load.image('player2City', 'images/pinkgreenp1.png');        
       this.load.image('beachCourt', 'images/court.gif');
-      this.load.image('cityCourt', 'images/court3.png');
+      this.load.image('cityCourt', 'images/blackongreycourt.png');
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
@@ -130,6 +131,8 @@ mapsScene.create = function(){
       this.load.image('ocean', 'images/pixelocean.png');
       this.load.image('city','images/skyline3.png');
       this.load.image('underwater','images/underwater.png');      
+      this.load.image('oceancourt', 'images/redorangecourt.png')
+      this.load.image('underwatercourt', 'images/bluecourt.png')
     //Animations
       this.load.spritesheet('shotmeter', 'animations/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
       this.load.spritesheet('p1blocking', 'animations/player1block.png', { frameWidth: 27, frameHeight: 100});
@@ -207,19 +210,19 @@ mapsScene.create = function(){
     } 
     else if (mapsState.mapSelection == 2){
       gameState.background.setTexture('ocean').setScale(.5);
-      gameState.court.setTexture('beachCourt').setScale(1.5);
-      gameState.hoop.setTexture('greenhoop');
+      gameState.court.setTexture('oceancourt').setScale(1.5).setPosition(400,350);
+      gameState.hoop.setTexture('hoop');
     } 
     else if (mapsState.mapSelection == 3){
-      gameState.background.setTexture('city').setScale(1.85).setPosition(375,0);
-      gameState.court.setTexture('cityCourt').setScale(1.5).setPosition(360, 360);
+      gameState.background.setTexture('city').setScale(2.4).setPosition(375,0);
+      gameState.court.setTexture('cityCourt').setScale(1.5).setPosition(400, 350);
       gameState.hoop.setTexture('greenhoop');
       gameState.player1.setTexture('player1City');
       gameState.player2.setTexture('player2City');
     } 
     else if (mapsState.mapSelection == 4){
-      gameState.background.setTexture('underwater').setScale(.5);
-      gameState.court.setTexture('beachCourt').setScale(1.5);
+      gameState.background.setTexture('underwater').setScale(1);
+      gameState.court.setTexture('underwatercourt').setScale(1.5);
       gameState.hoop.setTexture('greenhoop');
     }
 
@@ -616,9 +619,8 @@ mapsScene.create = function(){
       }
   }
   function shotAnimation(player){
-    meter = gameScene.add.sprite(player.x, player.y - 50, "shotmeter").setScale(.5);
+    var meter = gameScene.add.sprite(player.x, player.y - 50, "shotmeter").setScale(.5);
     meter.play("shoot");
-
     destroySprite(meter);
   }
   
@@ -644,7 +646,7 @@ mapsScene.create = function(){
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: false,
+      debug: true,
     },
     }
   };
