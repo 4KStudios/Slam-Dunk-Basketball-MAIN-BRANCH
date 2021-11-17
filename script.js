@@ -16,7 +16,7 @@
 
   titleScene.create = function(){
     var bg = this.add.image(400, 250,'titlescreen').setScale(1.4);
-    var startbutton = this.add.sprite(400, 275, 'startbutton').setScale(1).setInteractive();
+    var startbutton = this.add.sprite(400, 330, 'startbutton').setScale(1).setInteractive();
     var title = this.add.image(375,150, 'title').setScale(.50).setInteractive()
     ;
 
@@ -112,8 +112,7 @@ mapsScene.create = function(){
   }
 
 //Game Screen scene
-  gameScene.preload = function()
-  {
+  gameScene.preload = function() {
     //images
       this.load.image('player1img', 'images/player1img.png'); 
       this.load.image('player1City', 'images/tealpurpp2.png');       
@@ -126,6 +125,7 @@ mapsScene.create = function(){
       this.load.image('hoop', 'images/hoop.png');
       this.load.image('greenhoop', 'images/greenhoop.png')
       this.load.image('transparentSB', 'images/transparentSB.png')
+      this.load.image('neonSB', 'images/pinktealSB.png')
       this.load.image('bg', 'images/blackBackground.png');
       this.load.image('beach', 'images/beachbackground.png')
       this.load.image('ocean', 'images/pixelocean.png');
@@ -133,6 +133,7 @@ mapsScene.create = function(){
       this.load.image('underwater','images/underwater.png');      
       this.load.image('oceancourt', 'images/redorangecourt.png')
       this.load.image('underwatercourt', 'images/bluecourt.png')
+      this.load.image('underwaterhoop', 'images/oceanhoop.png')
     //Animations
       this.load.spritesheet('shotmeter', 'animations/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
       this.load.spritesheet('p1blocking', 'animations/player1block.png', { frameWidth: 27, frameHeight: 100});
@@ -160,6 +161,29 @@ mapsScene.create = function(){
       this.load.image('19', 'numbers/19.png');
       this.load.image('20', 'numbers/20.png');
       this.load.image('21', 'numbers/21.png');
+    //White Numbers
+       this.load.image('w0', 'whiteNums/0.png');
+      this.load.image('w1', 'whiteNums/1.png');
+      this.load.image('w2', 'whiteNums/2.png');
+      this.load.image('w3', 'whiteNums/3.png');
+      this.load.image('w4', 'whiteNums/4.png');
+      this.load.image('w5', 'whiteNums/5.png');
+      this.load.image('w6', 'whiteNums/6.png');
+      this.load.image('w7', 'whiteNums/7.png');
+      this.load.image('w8', 'whiteNums/8.png');
+      this.load.image('w9', 'whiteNums/9.png');
+      this.load.image('w10', 'whiteNums/10.png');
+      this.load.image('w11', 'whiteNums/11.png');
+      this.load.image('w12', 'whiteNums/12.png');
+      this.load.image('w13', 'whiteNums/13.png');
+      this.load.image('w14', 'whiteNums/14.png');
+      this.load.image('w15', 'whiteNums/15.png');
+      this.load.image('w16', 'whiteNums/16.png');
+      this.load.image('w17', 'whiteNums/17.png');
+      this.load.image('w18', 'whiteNums/18.png');
+      this.load.image('w19', 'whiteNums/19.png');
+      this.load.image('w20', 'whiteNums/20.png');
+      this.load.image('w21', 'whiteNums/21.png');
   }
 
   gameScene.create = function() {
@@ -217,20 +241,22 @@ mapsScene.create = function(){
       gameState.background.setTexture('city').setScale(2.4).setPosition(375,0);
       gameState.court.setTexture('cityCourt').setScale(1.5).setPosition(400, 350);
       gameState.hoop.setTexture('greenhoop');
+      gameState.scoreboard.setTexture('neonSB');
       gameState.player1.setTexture('player1City');
       gameState.player2.setTexture('player2City');
     } 
     else if (mapsState.mapSelection == 4){
       gameState.background.setTexture('underwater').setScale(1);
       gameState.court.setTexture('underwatercourt').setScale(1.5);
-      gameState.hoop.setTexture('greenhoop');
+      gameState.hoop.setTexture('underwaterhoop');
     }
 
     this.anims.create({
       key: "shoot",
-      frameRate: 50,
+      frameRate: 30,
       frames: this.anims.generateFrameNumbers("shotmeter", { start: 0, end: 17 }),
-      repeat: 0
+      repeat: 0,
+      skipMissedFrames: true,
     })
     this.anims.create({
       key: "p1block",
@@ -371,18 +397,18 @@ mapsScene.create = function(){
 
 
       this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
-        p1threeptline = true
+        p1threeptline = true;
       })
-      this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
-        p2threeptline = true
+      this.physics.add.overlap(gameState.player2, gameState.threepointline, function() {
+        p2threeptline = true;
       })
 
   }
   
   gameScene.update = function() {
     //Three Point Line Boolean
-      p1threeptline = false
-      p2threeptline = false
+      p1threeptline = false;
+      p2threeptline = false;
 
     //Player 1 Movement
       //Left and Right Key Movement
@@ -526,13 +552,14 @@ mapsScene.create = function(){
     
 
     //Score on Scoreboard
-
+    if (mapsScene.mapSelection == 3) {
+      gameState.scoreOnScreenP1.setTexture(`w${gameState.scoreP1}`)
+      gameState.scoreOnScreenP2.setTexture(`w${gameState.scoreP2}`)
+    } else{
       gameState.scoreOnScreenP1.setTexture(`${gameState.scoreP1}`)
       gameState.scoreOnScreenP2.setTexture(`${gameState.scoreP2}`)
-     /* this.add.text(86, 98, `${gameState.scoreP2}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
-      this.add.text(175, 98, `${gameState.scoreP1}`, { fontSize: '30px', fill: '#000', backgroundColor: '#f9f9f9' });
-      */
-      
+    }
+
     //Ending Game Function
       if(gameState.scoreP1 >= 21){
         this.physics.pause();
@@ -570,7 +597,7 @@ mapsScene.create = function(){
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
           gameState.spawnBallP2();
-        } else {
+        } else if (p1threeptline == false) {
           gameState.scoreP1 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -601,7 +628,7 @@ mapsScene.create = function(){
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
           gameState.spawnBallP1();
-        } else {
+        } else if (p2threeptline == false) {
           gameState.scoreP2 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -646,7 +673,7 @@ mapsScene.create = function(){
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: true,
+      debug: false,
     },
     }
   };
