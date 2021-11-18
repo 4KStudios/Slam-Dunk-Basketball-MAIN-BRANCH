@@ -4,7 +4,8 @@
   var controlScene = new Phaser.Scene('controls');
   var mapsScene = new Phaser.Scene('maps');
 
-//list for variables in the titleScene
+//Global variables
+  var mapSelection;
 
 //Title Screen scene
   titleScene.preload = function(){
@@ -50,10 +51,6 @@
   }
 
 //MapsScene
-const mapsState = {
- mapSelection: 0,
-}
-
 mapsScene.preload = function(){
   this.load.image('mapBackground', 'images/background5.png');
   this.load.image('beach', 'images/beachbackground.png');
@@ -75,22 +72,22 @@ mapsScene.create = function(){
 
   //Making the maps clickable
     beachMap.once('pointerdown', function (pointer) {
-      mapsState.mapSelection = 1;
+      mapSelection = 1;
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
     oceanMap.once('pointerdown', function (pointer) {
-      mapsState.mapSelection = 2;
+      mapSelection = 2;
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
     cityMap.once('pointerdown', function (pointer) {
-      mapsState.mapSelection = 3;
+      mapSelection = 3;
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
     underwaterMap.once('pointerdown', function (pointer) {
-      mapsState.mapSelection = 4;
+      mapSelection = 4;
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
@@ -140,7 +137,6 @@ mapsScene.create = function(){
       this.load.spritesheet('p2blocking', 'animations/player2block.png', { frameWidth: 27, frameHeight: 100});
     //Numbers for Score
       this.load.image('0', 'numbers/0.png');
-      this.load.image('1', 'numbers/1.png');
       this.load.image('2', 'numbers/2.png');
       this.load.image('3', 'numbers/3.png');
       this.load.image('4', 'numbers/4.png');
@@ -162,8 +158,7 @@ mapsScene.create = function(){
       this.load.image('20', 'numbers/20.png');
       this.load.image('21', 'numbers/21.png');
     //White Numbers
-       this.load.image('w0', 'whiteNums/0.png');
-      this.load.image('w1', 'whiteNums/1.png');
+      this.load.image('w0', 'whiteNums/0.png');
       this.load.image('w2', 'whiteNums/2.png');
       this.load.image('w3', 'whiteNums/3.png');
       this.load.image('w4', 'whiteNums/4.png');
@@ -187,7 +182,7 @@ mapsScene.create = function(){
   }
 
   gameScene.create = function() {
-
+    console.log(mapSelection);
     //Setting background and Court
     gameState.background = this.add.image(400,50, 'bg')
     gameState.court = this.add.image(400, 250, 'beachCourt');
@@ -227,17 +222,17 @@ mapsScene.create = function(){
       gameState.ball.inAir = false;
 
     //Changing sprites based on map
-    if (mapsState.mapSelection == 1){
+    if (mapSelection == 1){
       gameState.background.setTexture('beach').setScale(.5);
       gameState.court.setTexture('beachCourt').setScale(1.5);
       gameState.hoop.setTexture('hoop');
     } 
-    else if (mapsState.mapSelection == 2){
+    else if (mapSelection == 2){
       gameState.background.setTexture('ocean').setScale(.5);
       gameState.court.setTexture('oceancourt').setScale(1.5).setPosition(400,350);
       gameState.hoop.setTexture('hoop');
     } 
-    else if (mapsState.mapSelection == 3){
+    else if (mapSelection == 3){
       gameState.background.setTexture('city').setScale(2.4).setPosition(375,0);
       gameState.court.setTexture('cityCourt').setScale(1.5).setPosition(400, 350);
       gameState.hoop.setTexture('greenhoop');
@@ -245,7 +240,7 @@ mapsScene.create = function(){
       gameState.player1.setTexture('player1City');
       gameState.player2.setTexture('player2City');
     } 
-    else if (mapsState.mapSelection == 4){
+    else if (mapSelection == 4){
       gameState.background.setTexture('underwater').setScale(1);
       gameState.court.setTexture('underwatercourt').setScale(1.5);
       gameState.hoop.setTexture('underwaterhoop');
@@ -270,7 +265,14 @@ mapsScene.create = function(){
       frames: this.anims.generateFrameNumbers("p2blocking", { start: 0, end: 3 }),
       repeat: 0
     });
+    this.anims.create({
+      key:"dunkcelly", 
+      frameRate: 25,
+      frames:this.anims.generateFrameNumbers
 
+
+
+    }
 
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
@@ -316,7 +318,7 @@ mapsScene.create = function(){
       });
       this.physics.add.collider(gameState.player2, wallL, function(){
         //Out of Bounds on Left Wall
-        if (gameState.player2.y <= 270 && gameState.player2.hasBall == true) {
+        if (gameState.player2.y <= 250 && gameState.player2.hasBall == true) {
           gameState.player2.hasBall = false;
           gameState.player1.hasBall = true;
           gameState.spawnBallP1();
@@ -332,7 +334,7 @@ mapsScene.create = function(){
       });
       this.physics.add.collider(gameState.player2, wallR, function(){
         //Out of Bounds on Right Wall
-        if (gameState.player2.y <= 230 && gameState.player2.hasBall == true) {
+        if (gameState.player2.y <= 210 && gameState.player2.hasBall == true) {
           gameState.player2.hasBall = false;
           gameState.player1.hasBall = true;
           gameState.spawnBallP1();
@@ -394,14 +396,17 @@ mapsScene.create = function(){
       
       p1threeptline = false
       p2threeptline = false
+      
+      this.physics.add.existing(gameState.player1);
+      this.physics.add.existing(gameState.threepointline);
 
 
-      this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
+     /* this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
         p1threeptline = true;
       })
       this.physics.add.overlap(gameState.player2, gameState.threepointline, function() {
         p2threeptline = true;
-      })
+      })*/
 
   }
   
@@ -409,6 +414,13 @@ mapsScene.create = function(){
     //Three Point Line Boolean
       p1threeptline = false;
       p2threeptline = false;
+
+      this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
+        p1threeptline = true;
+      })
+      this.physics.add.overlap(gameState.player2, gameState.threepointline, function() {
+        p2threeptline = true;
+      })
 
     //Player 1 Movement
       //Left and Right Key Movement
@@ -472,7 +484,7 @@ mapsScene.create = function(){
         gameState.ball.setPosition(gameState.player1.x, gameState.player1.y - 30);
         gameState.player1.hasBall = false
         console.log(gameState.cursors.keyQ.duration);
-        if (gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 1000){
+        if (gameState.cursors.keyQ.duration < 250 && gameState.cursors.keyQ.duration > 1000){
         this.physics.moveToObject(gameState.ball, gameState.hoop, 100);
         } 
         else {
@@ -544,29 +556,21 @@ mapsScene.create = function(){
           }
         }
       }
-    /*this.input.keyboard.on('CTRL.ALT', function () {
-      if (gameState.player1.hasBall == true && gameState.player2.x <= gameState.player1.x + 30 && gameState.player2.x >= gameState.player1.x - 30) {
-        blockAnimation(gameState.player2)
-      }
-    }) */
-    
 
     //Score on Scoreboard
-    if (mapsScene.mapSelection == 3) {
-      gameState.scoreOnScreenP1.setTexture(`w${gameState.scoreP1}`)
-      gameState.scoreOnScreenP2.setTexture(`w${gameState.scoreP2}`)
-    } else{
-      gameState.scoreOnScreenP1.setTexture(`${gameState.scoreP1}`)
-      gameState.scoreOnScreenP2.setTexture(`${gameState.scoreP2}`)
+    if (mapSelection == 3) {
+      gameState.scoreOnScreenP1.setTexture(`w${gameState.scoreP1}`);
+      gameState.scoreOnScreenP2.setTexture(`w${gameState.scoreP2}`);
+    } else {
+      gameState.scoreOnScreenP1.setTexture(`${gameState.scoreP1}`);
+      gameState.scoreOnScreenP2.setTexture(`${gameState.scoreP2}`);
     }
 
     //Ending Game Function
       if(gameState.scoreP1 >= 21){
         this.physics.pause();
-        //this.add.text(375, 50, `Player 1 Wins!` , { fontSize: '15px', fill: '#000' });
       } else if(gameState.scoreP2 >= 21){
         this.physics.pause();
-        //this.add.text(375, 50, `Player 2 Wins!` , { fontSize: '15px', fill: '#000' });
       }
 
        //dunking p1
