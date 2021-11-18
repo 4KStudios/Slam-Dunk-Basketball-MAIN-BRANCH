@@ -135,6 +135,14 @@ mapsScene.create = function(){
       this.load.spritesheet('shotmeter', 'animations/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
       this.load.spritesheet('p1blocking', 'animations/player1block.png', { frameWidth: 27, frameHeight: 100});
       this.load.spritesheet('p2blocking', 'animations/player2block.png', { frameWidth: 27, frameHeight: 100});
+      this.load.spritesheet('p1dunkcelly', 'animations/player1dunkcelly.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p2dunkcelly', 'animations/player2dunkcelly.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p1shotleft', 'animations/player1shotleftside.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p1shotcenter', 'animations/player1shotcenter.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p1shotright', 'animations/player1shotrightside.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p2shotleft', 'animations/player2shotleftside.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p2shotcenter', 'animations/player2shotcenter.png', { frameWidth: 27, frameHeight:100});
+      this.load.spritesheet('p2shotright', 'animations/player2shotrightside.png', { frameWidth: 27, frameHeight:100});
     //Numbers for Score
       this.load.image('0', 'numbers/0.png');
       this.load.image('2', 'numbers/2.png');
@@ -182,7 +190,6 @@ mapsScene.create = function(){
   }
 
   gameScene.create = function() {
-    console.log(mapSelection);
     //Setting background and Court
     gameState.background = this.add.image(400,50, 'bg')
     gameState.court = this.add.image(400, 250, 'beachCourt');
@@ -204,8 +211,19 @@ mapsScene.create = function(){
     //Adding Scoreboard
       gameState.scoreboard = this.add.sprite(140, 90, 'transparentSB');
       gameState.scoreboard.setScale(.75,.75)
-      gameState.scoreOnScreenP1 = this.add.sprite(180, 112, '0').setScale(.5);
-      gameState.scoreOnScreenP2 = this.add.sprite(102, 112, '0').setScale(.5);
+      gameState.scoreOnScreenP1 = this.add.sprite(180, 112, '0');
+      gameState.scoreOnScreenP2 = this.add.sprite(102, 112, '0');
+      if(mapSelection == 3){
+        gameState.scoreOnScreenP1.setScale(.55);
+        gameState.scoreOnScreenP1.setPosition(190, 108);
+        gameState.scoreOnScreenP2.setScale(.55);
+        gameState.scoreOnScreenP2.setPosition(95, 108);
+        
+      } else {
+        gameState.scoreOnScreenP1.setScale(.5);
+        gameState.scoreOnScreenP2.setScale(.5);
+      }
+
 
     // Adding Hoop Sprite
       gameState.hoop = this.physics.add.sprite(400, 100, 'hoop')
@@ -266,14 +284,53 @@ mapsScene.create = function(){
       repeat: 0
     });
     this.anims.create({
-      key:"dunkcelly", 
+      key:"p1dunkcelly", 
       frameRate: 25,
-      frames:this.anims.generateFrameNumbers
-
-
-
-    }
-
+      frames:this.anims.generateFrameNumbers("p1dunkcelly", { start: 0, end: 2}),
+      repeat: 0 
+    });
+    this.anims.create({
+      key:"p2dunkcelly", 
+      frameRate: 25,
+      frames:this.anims.generateFrameNumbers("p2dunkcelly", { start: 0, end: 2}),
+      repeat: 0 
+    })
+    this.anims.create({
+      key:"p1shotleft",
+      frameRate: 25,
+      frames:this.anims.generateFrameNumbers("p1shotleft", {start: 0, end: 2}),
+      repeat:0,
+    })
+    this.anims.create({
+      key:"p1shotcenter",
+      frameRate: 25,
+      frames:this.anims.generateFrameNumbers("p1shotcenter", {start: 0, end: 2}),
+      repeat:0,
+    })
+    this.anims.create({
+      key:"p1shotright",
+      frameRate: 25,
+      frames:this.anims.generateFrameNumbers("p1shotright", {start: 0, end: 2}),
+      repeat:0,
+    })
+    this.anims.create({
+      key:"p2shotleft",
+      frameRate: 25,
+     frames:this.anims.generateFrameNumbers("p2shotleft", {start: 0, end: 2}),
+      repeat:0,
+    });
+    this.anims.create({
+      key:"p2shotcenter",
+      frameRate: 25,
+     frames:this.anims.generateFrameNumbers("p2shotcenter", {start: 0, end: 2}),
+      repeat:0,
+    })
+    this.anims.create({
+      key:"p2shotright",
+      frameRate: 25,
+     frames:this.anims.generateFrameNumbers("p2shotright", {start: 0, end: 2}),
+      repeat:0,
+    })
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
       gameState.player1.setOffset(6, 38);
@@ -397,30 +454,22 @@ mapsScene.create = function(){
       p1threeptline = false
       p2threeptline = false
       
-      this.physics.add.existing(gameState.player1);
-      this.physics.add.existing(gameState.threepointline);
-
-
-     /* this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
-        p1threeptline = true;
-      })
-      this.physics.add.overlap(gameState.player2, gameState.threepointline, function() {
-        p2threeptline = true;
-      })*/
-
-  }
-  
-  gameScene.update = function() {
-    //Three Point Line Boolean
-      p1threeptline = false;
-      p2threeptline = false;
-
       this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
         p1threeptline = true;
       })
       this.physics.add.overlap(gameState.player2, gameState.threepointline, function() {
         p2threeptline = true;
       })
+
+  }
+  
+  gameScene.update = function() {
+    //Three Point Line Boolean
+
+      p1threeptline = false;
+      p2threeptline = false;
+
+      
 
     //Player 1 Movement
       //Left and Right Key Movement
