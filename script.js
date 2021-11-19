@@ -35,7 +35,6 @@
 
     controlsbutton.once('pointerdown', function (pointer) {
       game.scene.start('controls');
-      game.scene.stop('title');
     }, this);
   }
 
@@ -46,11 +45,10 @@
   }
 
   controlScene.create = function(){
-    var bg = this.add.image(400, 263, 'controlsimage').setScale(.75);
+    var bg = this.add.image(370, 263, 'controlsimage').setScale(.75);
     var backoutbutton = this.add.sprite(600, 50, 'backoutbutton').setScale(2).setInteractive();
 
     backoutbutton.once('pointerdown', function (pointer) {
-        game.scene.start('title');
         game.scene.stop('controls');
       }, this);
   }
@@ -242,8 +240,10 @@ mapsScene.create = function(){
     //Adding Player and Ball Sprite
       gameState.player1 = this.physics.add.sprite(400, 420, 'player1img');
       gameState.player1.hasBall = true;
+      gameState.player1.threeptline = false;
       gameState.player2 = this.physics.add.sprite(400,350 , 'player2img');
       gameState.player2.hasBall = false;
+      gameState.player2.threeptline = false;
       gameState.ball = this.physics.add.sprite(200, 200, 'ball', .5);
       gameState.ball.setScale(.05);
       gameState.ball.setImmovable();
@@ -439,9 +439,15 @@ mapsScene.create = function(){
           gameState.spawnBallP2();
           if (gameState.cursors.keyZ.isDown) {
             gameState.scoreP1 += 2
+          }
         }
-      }
         
+        /*Phaser.Timer = function (game, autoDestroy) {
+          if (gameState.player1.hasBall == true) {
+             playAnimation(gameState.player1, 'p1dunkcelly');
+          }
+        }*/
+      
       });
       this.physics.add.collider(gameState.player2, wallBaseline, function() {
         //Player 2 Out of Bounds on baseline
@@ -461,24 +467,12 @@ mapsScene.create = function(){
         madeShotP2();
       })
       
-
-      
-      this.physics.add.overlap(gameState.player1, gameState.threepointline, function(){
-        gameState.p1threeptline = true;
-      });
-      this.physics.add.overlap(gameState.player2, gameState.threepointline, function(){
-        gameState.p2threeptline = true;
-      });
-
   }
   
   gameScene.update = function() {
     //Three Point Line Boolean
-
-      gameState.p1threeptline = false;
-      gameState.p2threeptline = false;
-
-      
+      gameState.player1.threeptline = this.physics.overlap(gameState.player1, gameState.threepointline);
+      gameState.player2.threeptline = this.physics.overlap(gameState.player2, gameState.threepointline);
 
     //Player 1 Movement
       //Left and Right Key Movement
@@ -534,7 +528,6 @@ mapsScene.create = function(){
       
       gameState.cursors.keyQ.on('down', function() {
         if(gameState.player1.hasBall == true && gameState.ball.inAir == false){
-          gameState.threeOrNo = gameState.p1threeptline;
           shotAnimation(gameState.player1);
         }
       });
@@ -564,7 +557,6 @@ mapsScene.create = function(){
     //Shooting Player 2
       gameState.cursors.numPad1.on('down', function() {
         if(gameState.player2.hasBall == true && gameState.ball.inAir == false){
-          gameState.threeOrNo = gameState.p2threeptline;
           shotAnimation(gameState.player2);
         }
       });
@@ -634,14 +626,14 @@ mapsScene.create = function(){
       }
 
        //dunking p1
-      if(gameState.p1threeptline == false && gameState.cursors.keyZ.isDown && gameState.player1.hasBall == true) {
+      if(gameState.player1.threeptline == true && gameState.cursors.keyZ.isDown && gameState.player1.hasBall == true) {
           this.physics.moveToObject(gameState.player1, gameState.hoop, 100)
           gameState.ball.y -= 50
           this.physics.moveToObject(gameState.ball, gameState.hoop, 100) 
       }
       
       //dunking p2
-      if(gameState.p2threeptline == false && gameState.cursors.numPad2.isDown && gameState.player2.hasBall == true) {
+      if(gameState.player2.threeptline == true && gameState.cursors.numPad2.isDown && gameState.player2.hasBall == true) {
         this.physics.moveToObject(gameState.player2, gameState.hoop, 100)
         gameState.ball.y -= 50
         this.physics.moveToObject(gameState.ball, gameState.hoop, 100)
@@ -652,7 +644,7 @@ mapsScene.create = function(){
 //Score for P1 or Rebound
   function madeShotP1(){
     if(gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 500){
-        if (gameState.p1threeptline == true) {
+        if (gameState.player1.threeptline == true) {
           gameState.scoreP1 += 2
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -661,7 +653,7 @@ mapsScene.create = function(){
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
           gameState.spawnBallP2();
-        } else if (gameState.p1threeptline == false) {
+        } else if (gameState.player1.threeptline == false) {
           gameState.scoreP1 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -683,7 +675,7 @@ mapsScene.create = function(){
 //Score for P2 or Rebound
   function madeShotP2(){
     if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){
-      if (gameState.p2threeptline == true) {
+      if (gameState.player2.threeptline == true) {
           gameState.scoreP2 += 2
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -692,7 +684,7 @@ mapsScene.create = function(){
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
           gameState.spawnBallP1();
-        } else if (gameState.p2threeptline == false) {
+        } else if (gameState.player2.threeptline == false) {
           gameState.scoreP2 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -743,7 +735,7 @@ mapsScene.create = function(){
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: true,
+      debug: false,
     },
     }
   };
