@@ -11,8 +11,9 @@
   titleScene.preload = function(){
     this.load.image('titlescreen', 'images/MAINMENU.gif');
     this.load.image('startbutton', 'images/startbutton.png');
-    this.load.image('controlsbutton', 'images/controlsbutton.png');//placeholder
-    this.load.image('title', 'images/title1.png')
+    this.load.image('controlsbutton', 'images/controlsbutton.png');
+    this.load.image('title', 'images/title1.png');
+    this.load.audio('titleMusic', ['music/basketball.mp3']);
   }
 
   titleScene.create = function(){
@@ -20,6 +21,10 @@
     var startbutton = this.add.sprite(400, 330, 'startbutton').setScale(1).setInteractive();
     var title = this.add.image(375,150, 'title').setScale(.50).setInteractive()
     ;
+    
+    
+    gameState.titleMusic = this.sound.add('titleMusic', {loop: true});
+    gameState.titleMusic.play();
 
     var controlsbutton = this.add.sprite(398, 425, 'controlsbutton').setScale(2.5).setInteractive();
 
@@ -73,21 +78,25 @@ mapsScene.create = function(){
   //Making the maps clickable
     beachMap.once('pointerdown', function (pointer) {
       mapSelection = 1;
-      game.scene.stop('maps')
+      gameState.titleMusic.stop();
+      game.scene.stop('maps');
       game.scene.start('game');
     }, this);
     oceanMap.once('pointerdown', function (pointer) {
       mapSelection = 2;
+      gameState.titleMusic.stop();
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
     cityMap.once('pointerdown', function (pointer) {
       mapSelection = 3;
+      gameState.titleMusic.stop();
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
     underwaterMap.once('pointerdown', function (pointer) {
       mapSelection = 4;
+      gameState.titleMusic.stop();
       game.scene.stop('maps')
       game.scene.start('game');
     }, this);
@@ -97,6 +106,7 @@ mapsScene.create = function(){
   const gameState = {
     scoreP1: 0,
     scoreP2: 0,
+    threeOrNo: true,
   }
 //Spawns players at top of key
   gameState.spawnBallP2 = function(){
@@ -264,6 +274,7 @@ mapsScene.create = function(){
       gameState.hoop.setTexture('underwaterhoop');
     }
 
+  //Animations
     this.anims.create({
       key: "shoot",
       frameRate: 30,
@@ -331,6 +342,7 @@ mapsScene.create = function(){
      frames:this.anims.generateFrameNumbers("p2shotright", {start: 0, end: 2}),
       repeat:0,
     })
+
     //Changing Player Hitboxes
       gameState.player1.setSize(15, 45);
       gameState.player1.setOffset(6, 38);
@@ -342,9 +354,7 @@ mapsScene.create = function(){
       gameState.hoop.setOffset(138, 75);
 
     //3-point line Hitbox
-      gameState.threepointline = this.physics.add.sprite(400, 280)
-      gameState.threepointline.setSize(550,250)
-
+      gameState.threepointline = this.physics.add.sprite(400, 280).setSize(550,250);
 
     // Inputing Arrows
       gameState.cursors = this.input.keyboard.createCursorKeys();
@@ -397,7 +407,7 @@ mapsScene.create = function(){
           gameState.spawnBallP1();
         }
       });
-      this.physics.add.collider(gameState.player1, wallBottom);
+      this.physics.add.collider(gameState.player1, wallBottom, true);
       this.physics.add.collider(gameState.player2, wallBottom);
       this.physics.add.collider(gameState.player1, gameState.ball, function(){ 
         //Player 1 ball pickup
@@ -451,23 +461,22 @@ mapsScene.create = function(){
         madeShotP2();
       })
       
-      p1threeptline = false
-      p2threeptline = false
+
       
-      this.physics.add.overlap(gameState.player1, gameState.threepointline, function() {
-        p1threeptline = true;
-      })
-      this.physics.add.overlap(gameState.player2, gameState.threepointline, function() {
-        p2threeptline = true;
-      })
+      this.physics.add.overlap(gameState.player1, gameState.threepointline, function(){
+        gameState.p1threeptline = true;
+      });
+      this.physics.add.overlap(gameState.player2, gameState.threepointline, function(){
+        gameState.p2threeptline = true;
+      });
 
   }
   
   gameScene.update = function() {
     //Three Point Line Boolean
 
-      p1threeptline = false;
-      p2threeptline = false;
+      gameState.p1threeptline = false;
+      gameState.p2threeptline = false;
 
       
 
@@ -525,6 +534,7 @@ mapsScene.create = function(){
       
       gameState.cursors.keyQ.on('down', function() {
         if(gameState.player1.hasBall == true && gameState.ball.inAir == false){
+          gameState.threeOrNo = gameState.p1threeptline;
           shotAnimation(gameState.player1);
         }
       });
@@ -554,6 +564,7 @@ mapsScene.create = function(){
     //Shooting Player 2
       gameState.cursors.numPad1.on('down', function() {
         if(gameState.player2.hasBall == true && gameState.ball.inAir == false){
+          gameState.threeOrNo = gameState.p2threeptline;
           shotAnimation(gameState.player2);
         }
       });
@@ -579,7 +590,7 @@ mapsScene.create = function(){
       }
     }, this);
 
-    //blocking p1
+    //Blocking Player 1
       if (gameState.player1.x >= gameState.player2.x - 30 && gameState.player1.x <= gameState.player2.x + 30) {
         if (gameState.cursors.numPad2.isDown) {
           if (gameState.cursors.keyF.isDown) {
@@ -623,14 +634,14 @@ mapsScene.create = function(){
       }
 
        //dunking p1
-      if(p1threeptline == false && gameState.cursors.keyZ.isDown && gameState.player1.hasBall == true) {
+      if(gameState.p1threeptline == false && gameState.cursors.keyZ.isDown && gameState.player1.hasBall == true) {
           this.physics.moveToObject(gameState.player1, gameState.hoop, 100)
           gameState.ball.y -= 50
           this.physics.moveToObject(gameState.ball, gameState.hoop, 100) 
       }
       
       //dunking p2
-      if(p2threeptline == false && gameState.cursors.numPad2.isDown && gameState.player2.hasBall == true) {
+      if(gameState.p2threeptline == false && gameState.cursors.numPad2.isDown && gameState.player2.hasBall == true) {
         this.physics.moveToObject(gameState.player2, gameState.hoop, 100)
         gameState.ball.y -= 50
         this.physics.moveToObject(gameState.ball, gameState.hoop, 100)
@@ -641,7 +652,7 @@ mapsScene.create = function(){
 //Score for P1 or Rebound
   function madeShotP1(){
     if(gameState.cursors.keyQ.duration > 250 && gameState.cursors.keyQ.duration < 500){
-        if (p1threeptline == true) {
+        if (gameState.p1threeptline == true) {
           gameState.scoreP1 += 2
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -650,7 +661,7 @@ mapsScene.create = function(){
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
           gameState.spawnBallP2();
-        } else if (p1threeptline == false) {
+        } else if (gameState.p1threeptline == false) {
           gameState.scoreP1 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -672,7 +683,7 @@ mapsScene.create = function(){
 //Score for P2 or Rebound
   function madeShotP2(){
     if(gameState.cursors.numPad1.duration > 250 && gameState.cursors.numPad1.duration < 500){
-      if (p2threeptline == true) {
+      if (gameState.p2threeptline == true) {
           gameState.scoreP2 += 2
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -681,7 +692,7 @@ mapsScene.create = function(){
           gameState.player1.hasBall = false;
           gameState.player2.hasBall = true;           
           gameState.spawnBallP1();
-        } else if (p2threeptline == false) {
+        } else if (gameState.p2threeptline == false) {
           gameState.scoreP2 += 3
           gameState.ball.setPosition(gameState.hoop.x, gameState.hoop.y);
           gameState.ball.setVelocityX(0);
@@ -698,6 +709,7 @@ mapsScene.create = function(){
         gameState.ball.inAir = false;
       }
   }
+
   function shotAnimation(player){
     var meter = gameScene.add.sprite(player.x, player.y - 50, "shotmeter").setScale(.5);
     meter.play("shoot");
@@ -714,6 +726,11 @@ mapsScene.create = function(){
     player.play(animation);
   }
 
+  function changeTrue(variable){
+    variable = true;
+    console.log(variable);
+  }
+
 //Phaser Library
   const config = 
   {
@@ -726,7 +743,7 @@ mapsScene.create = function(){
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: false,
+      debug: true,
     },
     }
   };
