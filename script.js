@@ -173,6 +173,8 @@ mapsScene.create = function(){
       this.load.image('19', 'numbers/19.png');
       this.load.image('20', 'numbers/20.png');
       this.load.image('21', 'numbers/21.png');
+      this.load.image('22', 'numbers/22.png');
+      this.load.image('23', 'numbers/23.png');
     //White Numbers
       this.load.image('w0', 'whiteNums/0.png');
       this.load.image('w2', 'whiteNums/2.png');
@@ -195,6 +197,8 @@ mapsScene.create = function(){
       this.load.image('w19', 'whiteNums/19.png');
       this.load.image('w20', 'whiteNums/20.png');
       this.load.image('w21', 'whiteNums/21.png');
+      this.load.image('w22', 'whtieNums/22.png');
+      this.load.image('w23', 'whiteNums/23.png');
   }
 
   gameScene.create = function() {
@@ -248,6 +252,8 @@ mapsScene.create = function(){
       gameState.ball.setScale(.05);
       gameState.ball.setImmovable();
       gameState.ball.inAir = false;
+
+      
 
     //Changing sprites based on map
     if (mapSelection == 1){
@@ -354,7 +360,7 @@ mapsScene.create = function(){
       gameState.hoop.setOffset(138, 75);
 
     //3-point line Hitbox
-      gameState.threepointline = this.physics.add.sprite(400, 280).setSize(550,250);
+      gameState.threepointline = this.physics.add.sprite(400, 250).setSize(550,250);
 
     // Inputing Arrows
       gameState.cursors = this.input.keyboard.createCursorKeys();
@@ -407,7 +413,7 @@ mapsScene.create = function(){
           gameState.spawnBallP1();
         }
       });
-      this.physics.add.collider(gameState.player1, wallBottom, true);
+      this.physics.add.collider(gameState.player1, wallBottom);
       this.physics.add.collider(gameState.player2, wallBottom);
       this.physics.add.collider(gameState.player1, gameState.ball, function(){ 
         //Player 1 ball pickup
@@ -621,6 +627,7 @@ mapsScene.create = function(){
     //Ending Game Function
       if(gameState.scoreP1 >= 21){
         this.physics.pause();
+
       } else if(gameState.scoreP2 >= 21){
         this.physics.pause();
       }
