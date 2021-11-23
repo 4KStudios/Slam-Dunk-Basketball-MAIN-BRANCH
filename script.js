@@ -761,7 +761,7 @@ mapsScene.create = function(){
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: true,
+      debug: false,
     },
     }
   };
