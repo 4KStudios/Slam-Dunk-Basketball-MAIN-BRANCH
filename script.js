@@ -41,7 +41,7 @@
 //Controls Screen scene
   controlScene.preload = function(){
     this.load.image('controlsimage', 'images/ctrls.png');
-    this.load.image('backoutbutton', 'images/back.png');//placeholder
+    this.load.image('backoutbutton', 'images/back.png');
   }
 
   controlScene.create = function(){
@@ -83,28 +83,27 @@ mapsScene.create = function(){
     oceanMap.once('pointerdown', function (pointer) {
       mapSelection = 2;
       gameState.titleMusic.stop();
-      game.scene.stop('maps')
+      game.scene.stop('maps');
       game.scene.start('game');
     }, this);
     cityMap.once('pointerdown', function (pointer) {
       mapSelection = 3;
       gameState.titleMusic.stop();
-      game.scene.stop('maps')
+      game.scene.stop('maps');
       game.scene.start('game');
     }, this);
     underwaterMap.once('pointerdown', function (pointer) {
       mapSelection = 4;
       gameState.titleMusic.stop();
-      game.scene.stop('maps')
+      game.scene.stop('maps');
       game.scene.start('game');
     }, this);
 }
 
 //list for variables in the gameScene
   const gameState = {
-    scoreP1: 0,
+    scoreP1: 21,
     scoreP2: 0,
-    threeOrNo: true,
   }
 //Spawns players at top of key
   gameState.spawnBallP2 = function(){
@@ -128,17 +127,24 @@ mapsScene.create = function(){
       this.load.image('ball', 'images/mainbasketball.png');
       this.load.image('Walls', 'images/Walls.png');
       this.load.image('hoop', 'images/hoop.png');
-      this.load.image('greenhoop', 'images/greenhoop.png')
-      this.load.image('transparentSB', 'images/transparentSB.png')
+      this.load.image('greenhoop', 'images/greenhoop.png');
+      this.load.image('transparentSB', 'images/transparentSB.png');
       this.load.image('neonSB', 'images/pinktealSB.png')
       this.load.image('bg', 'images/blackBackground.png');
-      this.load.image('beach', 'images/beachbackground.png')
+      this.load.image('beach', 'images/beachbackground.png');
       this.load.image('ocean', 'images/pixelocean.png');
       this.load.image('city','images/skyline3.png');
       this.load.image('underwater','images/underwater.png');      
-      this.load.image('oceancourt', 'images/redorangecourt.png')
-      this.load.image('underwatercourt', 'images/bluecourt.png')
-      this.load.image('underwaterhoop', 'images/oceanhoop.png')
+      this.load.image('oceancourt', 'images/redorangecourt.png');
+      this.load.image('underwatercourt', 'images/bluecourt.png');
+      this.load.image('underwaterhoop', 'images/oceanhoop.png');
+      this.load.image('p1Wins', 'images/p1WinsBlue.png');
+      this.load.image('p2Wins', 'images/p2WinsRed.png');
+      this.load.image('p1WinsPink', 'images/p1WinsPink.png');
+      this.load.image('p2WinsTeal', 'images/p2WinsTeal.png');
+      this.load.image('backoutbutton', 'images/back.png');
+      this.load.image('restartbutton', 'images/Restartbutton.png');
+      this.load.image('travis', 'images/travis.png')
     //Animations
       this.load.spritesheet('shotmeter', 'animations/ShotMeter.png', { frameWidth: 320, frameHeight: 320 });
       this.load.spritesheet('p1blocking', 'animations/player1block.png', { frameWidth: 27, frameHeight: 100});
@@ -230,7 +236,6 @@ mapsScene.create = function(){
         gameState.scoreOnScreenP1.setPosition(190, 108);
         gameState.scoreOnScreenP2.setScale(.55);
         gameState.scoreOnScreenP2.setPosition(95, 108);
-        
       } else {
         gameState.scoreOnScreenP1.setScale(.5);
         gameState.scoreOnScreenP2.setScale(.5);
@@ -253,7 +258,11 @@ mapsScene.create = function(){
       gameState.ball.setImmovable();
       gameState.ball.inAir = false;
 
-      
+    //Winning text sprites
+     gameState.p1Wins = this.add.sprite(380, 300, 'p1Wins').setScale(.75);
+     gameState.p1Wins.visible = false;
+     gameState.p2Wins = this.add.sprite(380, 300, 'p2Wins').setScale(.75);
+     gameState.p2Wins.visible = false;
 
     //Changing sprites based on map
     if (mapSelection == 1){
@@ -273,6 +282,8 @@ mapsScene.create = function(){
       gameState.scoreboard.setTexture('neonSB');
       gameState.player1.setTexture('player1City');
       gameState.player2.setTexture('player2City');
+      gameState.p1Wins.setTexture('p1WinsPink');
+      gameState.p2Wins.setTexture('p2WinsTeal');
     } 
     else if (mapSelection == 4){
       gameState.background.setTexture('underwater').setScale(1);
@@ -448,12 +459,6 @@ mapsScene.create = function(){
           }
         }
         
-        /*Phaser.Timer = function (game, autoDestroy) {
-          if (gameState.player1.hasBall == true) {
-             playAnimation(gameState.player1, 'p1dunkcelly');
-          }
-        }*/
-      
       });
       this.physics.add.collider(gameState.player2, wallBaseline, function() {
         //Player 2 Out of Bounds on baseline
@@ -472,7 +477,20 @@ mapsScene.create = function(){
         madeShotP1();
         madeShotP2();
       })
-      
+    var mainMenuButton;
+    //Endgame Main Menu Button 
+      if(gameState.scoreP1 >= 21 || gameState.scorep2 >= 21){
+        mainMenuButton = this.add.sprite(350, 200, 'restartbutton').setInteractive().setScale(1);
+        if (mapSelection == 3){
+          mainMenuButton.setTexture('travis');
+        }
+        mainMenuButton.once('pointerdown', function (pointer) {
+          game.registry.destroy();
+          game.scene.start('title');
+          game.scene.stop('game');
+        }, this);
+      }
+
   }
   
   gameScene.update = function() {
@@ -626,9 +644,10 @@ mapsScene.create = function(){
 
     //Ending Game Function
       if(gameState.scoreP1 >= 21){
+        gameState.p1Wins.visible = true;
         this.physics.pause();
-
       } else if(gameState.scoreP2 >= 21){
+        gameState.p2Wins.visible = true;
         this.physics.pause();
       }
 
@@ -742,7 +761,7 @@ mapsScene.create = function(){
     default: 'arcade',
     arcade: {
       enableBody: true,
-      debug: false,
+      debug: true,
     },
     }
   };
